@@ -18,6 +18,7 @@ int main()
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
         init_pair(2, COLOR_CYAN, COLOR_BLACK);
         init_pair(3, COLOR_RED, COLOR_BLACK);
+
     }
 
     const char *choices[] = {
@@ -58,7 +59,9 @@ int main()
                 getstr(cst.email);
                 printw("Enter phone: ");
                 getstr(cst.phone);
+                attron(COLOR_PAIR(3));
                 printw("Select a category: \n1. SeaView\n2. GardenView\n3. LakeView\n");
+                attroff(COLOR_PAIR(3));
                 int categoryChoice;
                 scanw("%d", &categoryChoice);
 
