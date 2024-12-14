@@ -124,3 +124,79 @@ void check_in(int room_id)
     remove("output/Room.txt");
     rename("output/Temp.txt", "output/Room.txt");
 }
+void cancelReservation(long reservation_ID,int room_ID){
+     char line2[200],line3[200];
+    FILE* fptr2=fopen("output/reservation.txt","r");
+    FILE* tempFile2=fopen("output/tempr.txt","w");
+    if (fptr2 == NULL || tempFile2 == NULL)
+    {
+        printf("Error: Could not open file to cancel reservation.\n");
+        fclose(fptr2);
+        fclose(tempFile2);
+        return;
+    }
+     FILE *fptr3 = fopen("output/Room.txt", "r");
+    FILE *tempFile3 = fopen("output/Temp.txt", "w");
+    if (fptr3 == NULL || tempFile3 == NULL)
+    {
+        printf("Error: Could not open room file.\n");
+        return;
+    }
+
+    while (fgets(line3, sizeof(line3), fptr3)) {
+        int roomID, price;
+        char status[20], category[20];
+
+        sscanf(line3, "%d %s %s %d", &roomID, status, category, &price);
+        if (roomID == room_ID) {
+            fprintf(tempFile3, "%d Available %s %d\n", roomID, category, price);
+        } 
+        else {
+            fprintf(tempFile3, "%d %s %s %d\n", roomID, status, category, price);
+        }
+    }
+    fclose(fptr3);
+    fclose(tempFile3);
+
+    remove("output/Room.txt");
+    rename("output/Temp.txt", "output/Room.txt");
+
+    
+     int room, found = 0;
+    while (fgets(line2, sizeof(line2), fptr2))
+    {
+        long reservationID;
+        char stat[20], name[50], email[50], nID[20], phone[20];
+        int day, month, year, numofNights;
+
+        sscanf(line2, "%ld,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%[^,],%s", &reservationID, &room, stat, name, &numofNights, &day, &month, &year, email, nID, phone);
+
+        if (reservation_ID == reservationID || room_ID == room)
+        {
+            if (strcmp(stat, "confirmed") == 0) {
+                printf("Error: Cannot cancel a confirmed reservation.\n");
+                fclose(fptr2);
+                fclose(tempFile2);
+                remove("output/tempr.txt");
+                return;
+            }
+            found = 1;
+            continue; // Skip writing this reservation to delete it
+        }
+     
+        fprintf(tempFile2, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n", reservationID, room, stat, name, numofNights, day, month, year, email, nID, phone);
+    }
+    fclose(fptr2);
+    fclose(tempFile2);
+
+     if (!found) {
+        printf("Error: Reservation ID or Room ID not found.\n");
+        remove("output/tempr.txt");
+        return;
+    }
+    remove("output/Reservations.txt");
+    rename("output/Tempr.txt", "output/Reservations.txt");
+    printf("Reservation successfully canceled.");
+
+
+}
