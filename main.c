@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <curses.h>
 #include "Src/reservations.h"
+#include "Src/editReservations.h"
 
 int main()
 {
@@ -18,13 +19,12 @@ int main()
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
         init_pair(2, COLOR_CYAN, COLOR_BLACK);
         init_pair(3, COLOR_RED, COLOR_BLACK);
-
     }
 
     const char *choices[] = {
         "1. Room Reservation",
         "2. Check-In",
-        "3. Cancel Reservation"};
+        "3. View Customer Details"};
     int n_choices = sizeof(choices) / sizeof(choices[0]);
 
     while (1)
@@ -49,6 +49,8 @@ int main()
             printw("Starting room reservation...\n");
             refresh();
             {
+                printw("Enter number of nights: ");
+                scanw("%d", &cst.numberOfnights);
                 printw("Enter day, month, year: ");
                 scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
                 printw("Enter name: ");
@@ -119,9 +121,21 @@ int main()
             break;
         case '3':
             clear();
-            printw("Cancel Reservation selected.\n");
+            printw("View Customer Details...\n");
             refresh();
-            getch();
+            {
+                long id;
+                attron(COLOR_PAIR(1));
+                printw("Enter reservation id or room id to view your data..\n");
+                attroff(COLOR_PAIR(1));
+                scanw("%ld", &id);
+                Customer csv = ViewCustomerDetails(id);
+                attron(COLOR_PAIR(2));
+                printw("Name : %s \n Phone Number: %s \n Email: %s \n National Id: %s \n Number of Nights: %d \n Check in date : %02d %02d %02d", csv.name, csv.phone, csv.email, csv.nationalId, csv.numberOfnights,csv.day, csv.month, csv.year);
+                attroff(COLOR_PAIR(2));
+                refresh();
+                getch();
+            }
             break;
         default:
             clear();

@@ -11,6 +11,7 @@ typedef struct {
     char catogary[20];
     int day, month, year;
     int room_id;
+    int numberOfnights;
 } Customer;
 
 
