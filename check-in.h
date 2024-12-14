@@ -1,6 +1,12 @@
 #ifndef CHECKIN_H
 #define CHECKIN_H
 
+typedef struct {
+    int roomID;
+    char status[20];     
+    char category[20];  
+    int price;         
+} Room;
 // Function to validate the reservation details during check-in
 int validateCheckIn(long reservationID, const char *checkInDate);
 
@@ -11,7 +17,7 @@ int updateReservationStatus(long reservationID);
 int updateRoomStatus(int roomID);
 
 // Helper function to compare dates
-int compareDates(const Reservation reservation, const charcheckInDate);
+int compareDates(const Reservation *reservation, const char *checkInDate);
 
 // Utility function to fetch room number associated with a reservation ID
 int getRoomNumberByReservationID(long reservationID, char *roomNumber);

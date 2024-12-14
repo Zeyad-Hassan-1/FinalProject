@@ -4,12 +4,7 @@
 #include <time.h>
 #include <ctype.h>
 #include "checkIn.h"
-typedef struct {
-    int roomID;
-    char status[20];     
-    char category[20];  
-    int price;         
-} Room;
+//#include "reservations.h"
 typedef struct {
     long reservationID;
     int roomID;        
@@ -55,12 +50,64 @@ int validateCheckIn(long reservationID, const char *checkInDate){
 */
 
 // Function to update room status in the "Room.txt" file
-int updateRoomStatus(int roomNumber){
+int updateRoomStatus(int roomID){
     FILE* fptr=fopen("Room.txt","r+");
     if (!fptr) {
         printf("Error: Could not open Room.txt\n");
         return 0;
     }
-    
+     FILE *temp = fopen("TempRoom.txt", "w");
+    if (!temp) {
+        printf("Error: Could not create TempRoom.txt\n");
+        fclose(fptr);
+        return 0;
+    }
+    Room room;
 
+    // تحديث حالة الغرفة إلى "Reserved"
+    while (fscanf(fptr, "%d %s %s %d", &room.roomID, room.status, room.category, &room.price) == 4) {
+        if (room.roomID == roomID) {
+            fprintf(temp, "%d Reserved %s %d\n", room.roomID, room.category, room.price);
+        } else {
+            fprintf(temp, "%d %s %s %d\n", room.roomID, room.status, room.category, room.price);
+        }
+    }
+
+    fclose(fptr);
+    fclose(temp);
+
+    // استبدال الملف الأصلي
+    remove("Room.txt");
+    rename("TempRoom.txt", "Room.txt");
+
+    return 1;
+}
+// Helper function to compare dates
+int compareDates(const Reservation *reservation, const char *checkInDate) {
+    int resDay = reservation->day;
+    int resMonth = reservation->month;
+    int resYear = reservation->year;
+
+    int checkDay, checkMonth, checkYear;
+    sscanf(checkInDate, "%d-%d-%d", &checkDay, &checkMonth, &checkYear);
+
+    if (resYear < checkYear) {
+        return -1; // Reservation date is earlier
+    } else if (resYear > checkYear) {
+        return 1; // Check-in date is earlier
+    }
+
+    if (resMonth < checkMonth) {
+        return -1; // Reservation date is earlier
+    } else if (resMonth > checkMonth) {
+        return 1; // Check-in date is earlier
+    }
+
+    if (resDay < checkDay) {
+        return -1; // Reservation date is earlier
+    } else if (resDay > checkDay) {
+        return 1; // Check-in date is earlier
+    }
+
+    return 0; // Dates are equal
 }
