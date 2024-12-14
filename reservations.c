@@ -1,48 +1,51 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <time.h>
 #include "reservations.h"
-#define FILENAME "reservation_ids.txt"
 
-int readLastID() {
-    FILE *file = fopen(FILENAME, "r");
-    int id = 10000;
-
-    if (file == NULL) {
-        return 10000;
-    }
-
-    fscanf(file, "%d", &id);
-    fclose(file);
-    return id;
+long generateUniqueID()
+{
+    time_t now = time(NULL);
+    return now % 100000000;
 }
 
-void updateLastID(int id) {
-    FILE *file = fopen(FILENAME, "w");
-    if (file == NULL) {
-        printf("Error: Could not open file to write.\n");
-        exit(1);
-    }
-
-    fprintf(file, "%d", id);
-    fclose(file);
-}
-
-int generateNewReservationID() {
-    int lastID = readLastID();
-    int newID = lastID + 1;
-    updateLastID(newID);
-    return newID;
-}
-
-void RoomReservation(FILE *fptr,char *name, char *mode, int statue,char *customerName, char *nationalId, char *email, char *mobileNumber)
+void RoomReservation(FILE *fptr, char *name, char *mode, int statue, char *customerName, char *nationalId, int day, int month, int year, char *email, char *mobileNumber, char *roomCatogary)
 {
     fptr = fopen(name, mode);
+    FILE *roomFile = fopen("Room.txt", "r");
+    if (roomFile == NULL)
+    {
+        printf("Error: Could not open file.\n");
+    }
+
+    char rooms[200];
+    int found = 0;
+    int id;
+
+    while (fgets(rooms, sizeof(rooms), roomFile) && !found)
+    {
+        int roomID, price;
+        char status[20], category[20];
+
+        // تحليل السطر
+        sscanf(rooms, "%d %s %s %d", &roomID, status, category, &price);
+
+        // التحقق من الحالة والفئة
+        if (strcmp(status, "Available") == 0 && strcmp(category, roomCatogary) == 0)
+        {
+            id = roomID;
+            found = 1;
+        }
+    }
+
+    fclose(roomFile);
     char *roomStatue;
-    int reservationID = generateNewReservationID();
+    long reservationID = generateUniqueID();
     if (statue)
         roomStatue = "confirmed";
     else
         roomStatue = "unconfirmed";
-    fprintf(fptr,"%d,%s,%s,%s,%s,%s\n",reservationID,roomStatue,customerName,email,nationalId,mobileNumber);
+    fprintf(fptr, "%d,%d,%s,%s,%02d-%02d-%02d,%s,%s,%s\n", reservationID, id, roomStatue, customerName, day, month, year, email, nationalId, mobileNumber);
     fclose(fptr);
 }
