@@ -1,10 +1,101 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <curses.h>
 #include "reservations.h"
 
-int main()
-{
-    FILE *fptr;
-    RoomReservation(fptr, "Reservation.txt", "a", 0, "Zeyad Hasan", "535585855", 23, 12, 2025, "Testmail@gmail.com", "01094933404","LakeView");
+typedef struct {
+    char name[20];
+    char nationalId[20];
+    char email[20];
+    char phone[20];
+    char catogary[20];
+    int day, month, year;
+} Customer;
+
+int main() {
+    initscr();
+    cbreak();
+    keypad(stdscr, TRUE);
+
+    if (has_colors()) {
+        start_color();
+        init_pair(1, COLOR_GREEN, COLOR_BLACK);
+        init_pair(2, COLOR_CYAN, COLOR_BLACK);
+        init_pair(3, COLOR_RED, COLOR_BLACK);
+    }
+
+    const char *choices[] = {
+        "1. Room Reservation",
+        "2. Check-In",
+        "3. Cancel Reservation"
+    };
+    int n_choices = sizeof(choices) / sizeof(choices[0]);
+
+    while (1) {
+        clear(); 
+
+        for (int i = 0; i < n_choices; i++) {
+            attron(COLOR_PAIR(i + 1));
+            mvprintw(5 + i, 10, choices[i]);
+            attroff(COLOR_PAIR(i + 1));
+        }
+
+        refresh();
+
+        
+        int choice = getch();
+
+        switch (choice) {
+            case '1': 
+                clear();
+                printw("Starting room reservation...\n");
+                refresh();
+                {
+                    FILE *fptr;
+                    Customer cst;
+                    printw("Enter day, month, year: ");
+                    scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
+                    printw("Enter name: ");
+                    getstr(cst.name);
+                    printw("Enter national ID: ");
+                    getstr(cst.nationalId);
+                    printw("Enter email: ");
+                    getstr(cst.email);
+                    printw("Enter phone: ");
+                    getstr(cst.phone);
+                    printw("Enter category: ");
+                    getstr(cst.catogary);
+
+                    RoomReservation(fptr, "Reservation.txt", "a", 0, cst.name, cst.nationalId,
+                                    cst.day, cst.month, cst.year, cst.email, cst.phone, cst.catogary);
+                    printw("Reservation saved!\n");
+                    refresh();
+                    getch();
+                }
+                break;
+            case '2':
+                clear();
+                printw("Check-In selected.\n");
+                refresh();
+                getch();
+                break;
+            case '3': 
+                clear();
+                printw("Cancel Reservation selected.\n");
+                refresh();
+                getch();
+                break;
+            default:
+                clear();
+                printw("Invalid choice! Please select a valid option.\n");
+                refresh();
+                getch();
+                break;
+        }
+    }
+
+    // إنهاء مكتبة curses
+    endwin();
+
     return 0;
 }
