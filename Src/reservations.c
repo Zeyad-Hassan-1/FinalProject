@@ -64,7 +64,6 @@ void check_in(int room_id,int reservation_id)
         int roomID, price;
         char status[20], category[20];
 
-        // قراءة السطر
         sscanf(line, "%d %s %s %d", &roomID, status, category, &price);
 
         if (roomID == room_id && strcmp(status, "Available") == 0)
