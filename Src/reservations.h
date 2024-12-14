@@ -8,10 +8,11 @@ typedef struct {
     char phone[20];
     char catogary[20];
     int day, month, year;
+    int room_id;
 } Customer;
 
 
 void RoomReservation(int statue,Customer customer_details);
-
+void check_in();
 
 #endif
