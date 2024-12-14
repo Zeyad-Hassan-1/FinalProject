@@ -59,6 +59,7 @@ int main()
                 printw("Enter phone: ");
                 getstr(cst.phone);
                 printw("Enter category: ");
+                //بيقولك عبد الله حط الcategories المتاحة واليوزر يختار منها
                 getstr(cst.catogary);
                 RoomReservation(0, cst);
                 printw("Reservation saved!\n");

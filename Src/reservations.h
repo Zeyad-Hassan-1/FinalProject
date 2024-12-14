@@ -2,9 +2,11 @@
 #define RESERVATIONS_H
 
 typedef struct {
+    long reservationID;
     char name[20];
     char nationalId[20];
     char email[20];
+    char status[20]; 
     char phone[20];
     char catogary[20];
     int day, month, year;
