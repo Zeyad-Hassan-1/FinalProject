@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <curses.h>
+#include "Src/login.h"
 #include "Src/reservations.h"
 #include "Src/editReservations.h"
 
@@ -19,12 +20,14 @@ int main()
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
         init_pair(2, COLOR_CYAN, COLOR_BLACK);
         init_pair(3, COLOR_RED, COLOR_BLACK);
+        init_pair(4, COLOR_RED, COLOR_WHITE);
     }
 
     const char *choices[] = {
-        "1. Room Reservation",
-        "2. Check-In",
-        "3. View Customer Details"};
+        "1. Login",
+        "2. Room Reservation",
+        "3. Check-In",
+        "4. View Customer Details"};
     int n_choices = sizeof(choices) / sizeof(choices[0]);
 
     while (1)
@@ -45,6 +48,16 @@ int main()
         switch (choice)
         {
         case '1':
+            clear();
+            printw("Login...\n");
+            refresh();
+            {
+                login();
+                refresh();
+                getch();
+            }
+            break;
+        case '2':
             clear();
             printw("Starting room reservation...\n");
             refresh();
@@ -90,7 +103,7 @@ int main()
                 getch();
             }
             break;
-        case '2':
+        case '3':
             clear();
             printw("Check-In selected.\n");
             refresh();
@@ -119,7 +132,7 @@ int main()
                 getch();
             }
             break;
-        case '3':
+        case '4':
             clear();
             printw("View Customer Details...\n");
             refresh();
