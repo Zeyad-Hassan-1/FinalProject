@@ -3,16 +3,10 @@
 #include <curses.h>
 #include "reservations.h"
 
-typedef struct {
-    char name[20];
-    char nationalId[20];
-    char email[20];
-    char phone[20];
-    char catogary[20];
-    int day, month, year;
-} Customer;
 
 int main() {
+
+
     initscr();
     cbreak();
     keypad(stdscr, TRUE);
@@ -66,8 +60,7 @@ int main() {
                     printw("Enter category: ");
                     getstr(cst.catogary);
 
-                    RoomReservation(fptr, "Reservation.txt", "a", 0, cst.name, cst.nationalId,
-                                    cst.day, cst.month, cst.year, cst.email, cst.phone, cst.catogary);
+                    RoomReservation(fptr, "Reservation.txt", "a", 0,cst);
                     printw("Reservation saved!\n");
                     refresh();
                     getch();
