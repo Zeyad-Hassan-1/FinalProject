@@ -10,10 +10,10 @@ long generateUniqueID()
     return now % 100000000;
 }
 
-void RoomReservation(FILE *fptr, char *name, char *mode, int statue,Customer customer_details)
+void RoomReservation(int statue,Customer customer_details)
 {
-    fptr = fopen(name, mode);
-    FILE *roomFile = fopen("Room.txt", "r");
+    FILE *fptr = fopen("output/Reservations.txt", "a");
+    FILE *roomFile = fopen("output/Room.txt", "r");
     if (roomFile == NULL)
     {
         printf("Error: Could not open file.\n");

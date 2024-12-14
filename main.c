@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <curses.h>
-#include "reservations.h"
+#include "Src/reservations.h"
 
 
 int main() {
@@ -45,7 +45,6 @@ int main() {
                 printw("Starting room reservation...\n");
                 refresh();
                 {
-                    FILE *fptr;
                     Customer cst;
                     printw("Enter day, month, year: ");
                     scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
@@ -59,8 +58,7 @@ int main() {
                     getstr(cst.phone);
                     printw("Enter category: ");
                     getstr(cst.catogary);
-
-                    RoomReservation(fptr, "Reservation.txt", "a", 0,cst);
+                    RoomReservation(0,cst);
                     printw("Reservation saved!\n");
                     refresh();
                     getch();

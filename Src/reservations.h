@@ -11,7 +11,7 @@ typedef struct {
 } Customer;
 
 
-void RoomReservation(FILE *fptr, char *name, char *mode, int statue,Customer customer_details);
+void RoomReservation(int statue,Customer customer_details);
 
 
 #endif
