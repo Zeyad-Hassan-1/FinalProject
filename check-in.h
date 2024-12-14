@@ -14,7 +14,7 @@ int validateCheckIn(long reservationID, const char *checkInDate);
 int updateReservationStatus(long reservationID);
 
 // Function to update room status in the "Room.txt" file
-int updateRoomStatus(int roomID);
+//int updateRoomStatus(int roomID);
 
 // Helper function to compare dates
 int compareDates(const Reservation *reservation, const char *checkInDate);
