@@ -1,11 +1,11 @@
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <curses.h>
 #include "Src/reservations.h"
 
 int main()
 {
-
     Customer cst;
 
     initscr();
@@ -58,9 +58,27 @@ int main()
                 getstr(cst.email);
                 printw("Enter phone: ");
                 getstr(cst.phone);
-                printw("Enter category: ");
-                //بيقولك عبد الله حط الcategories المتاحة واليوزر يختار منها
-                getstr(cst.catogary);
+                printw("Select a category: \n1. SeaView\n2. GardenView\n3. LakeView\n");
+                int categoryChoice;
+                scanw("%d", &categoryChoice);
+
+                switch (categoryChoice)
+                {
+                case 1:
+                    strcpy(cst.catogary, "SeaView");
+                    break;
+                case 2:
+                    strcpy(cst.catogary, "GardenView");
+                    break;
+                case 3:
+                    strcpy(cst.catogary, "LakeView");
+                    break;
+                default:
+                    printw("Invalid choice! Defaulting to Standard.\n");
+                    strcpy(cst.catogary, "Standard");
+                    break;
+                }
+
                 RoomReservation(0, cst);
                 printw("Reservation saved!\n");
                 refresh();
@@ -71,13 +89,27 @@ int main()
             clear();
             printw("Check-In selected.\n");
             refresh();
-            {   
-                int roomId;
-                printw("Are you sure to confirm your reservation ? press any key to continue ...");
+            {
+                long resID;
+                int day, month, year;
+                printw("Are you sure to confirm your reservation? Press any key to continue...");
                 getch();
-                scanw("%d",&roomId);
-                check_in(roomId);
-                printw("Your reservation was confirmed successfully");
+                printw("Enter the reservation ID: ");
+                scanw("%ld", &resID);
+                printw("Enter the check-in date (day month year): ");
+                scanw("%d %d %d", &day, &month, &year);
+                int validate = validateCheckIn(resID, day, month, year);
+                if (validate != 0)
+                {
+                    check_in(validate);
+                    printw("Your reservation was confirmed successfully.");
+                }
+                else
+                {
+                    attron(COLOR_PAIR(3));
+                    printw("Reservation not found or invalid details.\n");
+                    attroff(COLOR_PAIR(3));
+                }
                 refresh();
                 getch();
             }
