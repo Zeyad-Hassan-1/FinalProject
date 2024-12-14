@@ -96,7 +96,6 @@ int main()
         }
     }
 
-    // إنهاء مكتبة curses
     endwin();
 
     return 0;
