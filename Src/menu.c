@@ -31,12 +31,12 @@ void mainMenu()
 
         switch (choice)
         {
-        case '1': 
+        case '1':
             clear();
             printw("Login...\n");
             refresh();
             {
-                int loginSuccess = login(); 
+                int loginSuccess = login();
                 if (loginSuccess)
                 {
                     isLoggedIn = 1;
@@ -149,7 +149,21 @@ void secondaryMenu()
                 printw("Reservation saved!\n");
                 attroff(COLOR_PAIR(4));
                 refresh();
-                getch();
+                clear();
+                printw("Enter c to back to menu or any other key to Exit....");
+                int choose = getch();
+                switch (choose)
+                {
+                case 'c' /* constant-expression */:
+                    refresh();
+                    break;
+
+                default:
+                    clear();
+                    printw("Quitting......");
+                    Quit();
+                    break;
+                }
             }
             break;
 
@@ -179,7 +193,21 @@ void secondaryMenu()
                     attroff(COLOR_PAIR(3));
                 }
                 refresh();
-                getch();
+                clear();
+                printw("Enter c to back to menu or any other key to Exit....");
+                int choose = getch();
+                switch (choose)
+                {
+                case 'c' /* constant-expression */:
+                    refresh();
+                    break;
+
+                default:
+                    clear();
+                    printw("Quitting......");
+                    Quit();
+                    break;
+                }
             }
             break;
 
@@ -198,7 +226,21 @@ void secondaryMenu()
                 printw("Name : %s \n Phone Number: %s \n Email: %s \n National Id: %s \n Number of Nights: %d \n Check in date : %02d %02d %02d", csv.name, csv.phone, csv.email, csv.nationalId, csv.numberOfnights, csv.day, csv.month, csv.year);
                 attroff(COLOR_PAIR(2));
                 refresh();
-                getch();
+                clear();
+                printw("Enter c to back to menu or any other key to Exit....");
+                int choose = getch();
+                switch (choose)
+                {
+                case 'c' /* constant-expression */:
+                    refresh();
+                    break;
+
+                default:
+                    clear();
+                    printw("Quitting......");
+                    Quit();
+                    break;
+                }
             }
             break;
 
