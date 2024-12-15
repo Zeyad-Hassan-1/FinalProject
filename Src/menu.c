@@ -74,7 +74,6 @@ void mainMenu()
         }
     }
 
-    // بعد تسجيل الدخول، انتقل للقائمة الثانوية
     secondaryMenu();
 }
 
@@ -104,7 +103,7 @@ void secondaryMenu()
 
         switch (choice)
         {
-        case '1': // حجز غرفة
+        case '1':
             clear();
             printw("Starting room reservation...\n");
             refresh();
@@ -154,7 +153,7 @@ void secondaryMenu()
                 int choose = getch();
                 switch (choose)
                 {
-                case 'c' /* constant-expression */:
+                case 'c':
                     refresh();
                     break;
 
@@ -167,7 +166,7 @@ void secondaryMenu()
             }
             break;
 
-        case '2': // تسجيل الوصول
+        case '2':
             clear();
             printw("Check-In selected.\n");
             refresh();
@@ -198,7 +197,7 @@ void secondaryMenu()
                 int choose = getch();
                 switch (choose)
                 {
-                case 'c' /* constant-expression */:
+                case 'c':
                     refresh();
                     break;
 
@@ -211,7 +210,7 @@ void secondaryMenu()
             }
             break;
 
-        case '3': // عرض التفاصيل
+        case '3':
             clear();
             printw("View Customer Details...\n");
             refresh();
@@ -231,7 +230,7 @@ void secondaryMenu()
                 int choose = getch();
                 switch (choose)
                 {
-                case 'c' /* constant-expression */:
+                case 'c':
                     refresh();
                     break;
 
@@ -244,7 +243,7 @@ void secondaryMenu()
             }
             break;
 
-        case '4': // الخروج
+        case '4':
             clear();
             printw("Exiting the program...");
             refresh();
