@@ -43,32 +43,34 @@ int check(char *username, char *password)
 }
 
 // Function to handle the login process
-void login()
+int login()
 {
     // Keep asking for credentials until valid ones are entered
     char username[20], password[20];
-    do
+    while (1)
     {
         clear();
         printw("Enter your username: ");
-        getstr(username); // Remove newline character
+        getstr(username);
 
         printw("Enter your password: ");
-        getstr(password); // Remove newline character
+        getstr(password);
         refresh();
+
         // Check if credentials are valid
-        if (!check(username, password))
+        if (check(username, password))
+        {
+            clear();
+            printw("Login successful! Access granted.\n");
+            refresh();
+            return 1; // تسجيل الدخول ناجح
+        }
+        else
         {
             clear();
             printw("Invalid username or password. Please try again.\n");
             refresh();
         }
-
-    } while (!check(username, password)); // Loop until valid credentials are entered
-
-    // Once valid login is successful
-    clear();
-    printw("Login successful! Access granted.\n");
-    refresh();
-    // Additional system functionality can be added here after login
+    }
+    return 0; // احتياطي فقط، لن يتم الوصول هنا
 }

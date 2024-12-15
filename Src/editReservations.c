@@ -19,3 +19,7 @@ Customer ViewCustomerDetails(long id){
     }
     fclose(file);
 }
+
+int Quit(){
+    return 0;
+}

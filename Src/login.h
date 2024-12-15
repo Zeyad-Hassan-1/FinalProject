@@ -6,6 +6,6 @@
 #define Max_Line 100
 
 // Function to handle the login process
-void login();
+int login();
 
 #endif // LOGIN_H
