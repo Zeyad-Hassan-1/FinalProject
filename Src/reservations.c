@@ -4,6 +4,7 @@
 #include <time.h>
 #include "reservations.h"
 #include <curses.h>
+#include "validation.h"
 
 long generateUniqueID()
 {
@@ -17,19 +18,47 @@ void RoomReservation(int statue)
     printw("Enter number of nights: ");
     scanw("%d", &cst.numberOfnights);
     printw("Enter day, month, year: ");
-    scanw("%d", &cst.day);
-    scanw("%d", &cst.month);
-    scanw("%d", &cst.year);
+    scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
+    while (!is_valid_date(cst.day, cst.month, cst.year))
+    {
+        attron(COLOR_PAIR(1));
+        printw("Please Enter A vaild check in date in form of dd mm yyyy\n");
+        attroff(COLOR_PAIR(1));
+        scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
+    }
     printw("Enter name: ");
     getstr(cst.name);
     printw("Enter national ID: ");
     getstr(cst.nationalId);
+    while (!is_valid_national_id(cst.nationalId))
+    {
+        attron(COLOR_PAIR(1));
+        printw("Please Enter A vaild national id....\n");
+        attroff(COLOR_PAIR(1));
+        getstr(cst.nationalId);
+    }
     printw("Enter email: ");
     getstr(cst.email);
+    while (!is_valid_email(cst.email))
+    {
+        attron(COLOR_PAIR(1));
+        printw("Please Enter valid email ex:student@gmail.com");
+        attroff(COLOR_PAIR(1));
+        getstr(cst.email);
+    }
     printw("Enter phone: ");
     getstr(cst.phone);
+    while (!is_valid_phone(cst.phone))
+    {
+        attron(COLOR_PAIR(1));
+        printw("Please enter valid phone number containing 11 digit...\n");
+        attroff(COLOR_PAIR(1));
+        getstr(cst.phone);
+    }
+    
     attron(COLOR_PAIR(3));
-    printw("Select a category: \n1. SeaView\n2. GardenView\n3. LakeView\n");
+    printw("Select a category:");
+    printw("1. SeaView\n2. GardenView\n3. LakeView\n");
     attroff(COLOR_PAIR(3));
     int categoryChoice;
     scanw("%d", &categoryChoice);
