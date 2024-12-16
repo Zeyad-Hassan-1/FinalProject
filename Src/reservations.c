@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "reservations.h"
+#include <curses.h>
 
 long generateUniqueID()
 {
@@ -10,8 +11,46 @@ long generateUniqueID()
     return now % 100000000;
 }
 
-void RoomReservation(int statue, Customer customer_details)
+void RoomReservation(int statue)
 {
+    Customer cst;
+    printw("Enter number of nights: ");
+    scanw("%d", &cst.numberOfnights);
+    printw("Enter day, month, year: ");
+    scanw("%d", &cst.day);
+    scanw("%d", &cst.month);
+    scanw("%d", &cst.year);
+    printw("Enter name: ");
+    getstr(cst.name);
+    printw("Enter national ID: ");
+    getstr(cst.nationalId);
+    printw("Enter email: ");
+    getstr(cst.email);
+    printw("Enter phone: ");
+    getstr(cst.phone);
+    attron(COLOR_PAIR(3));
+    printw("Select a category: \n1. SeaView\n2. GardenView\n3. LakeView\n");
+    attroff(COLOR_PAIR(3));
+    int categoryChoice;
+    scanw("%d", &categoryChoice);
+
+    switch (categoryChoice)
+    {
+    case 1:
+        strcpy(cst.catogary, "SeaView");
+        break;
+    case 2:
+        strcpy(cst.catogary, "GardenView");
+        break;
+    case 3:
+        strcpy(cst.catogary, "LakeView");
+        break;
+    default:
+        printw("Invalid choice! Defaulting to Standard.\n");
+        strcpy(cst.catogary, "Standard");
+        break;
+    }
+
     FILE *fptr = fopen("output/Reservations.txt", "a");
     FILE *roomFile = fopen("output/Room.txt", "r");
     if (roomFile == NULL)
@@ -30,9 +69,9 @@ void RoomReservation(int statue, Customer customer_details)
 
         sscanf(rooms, "%d %s %s %d", &roomID, status, category, &price);
 
-        if (strcmp(status, "Available") == 0 && strcmp(category, customer_details.catogary) == 0)
+        if (strcmp(status, "Available") == 0 && strcmp(category, cst.catogary) == 0)
         {
-            customer_details.room_id = roomID;
+            cst.room_id = roomID;
             found = 1;
         }
     }
@@ -47,12 +86,18 @@ void RoomReservation(int statue, Customer customer_details)
 
     char *roomStatue = statue ? "confirmed" : "unconfirmed";
     long reservationID = generateUniqueID();
-    fprintf(fptr, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n", reservationID, customer_details.room_id, roomStatue, customer_details.name, customer_details.numberOfnights, customer_details.day, customer_details.month, customer_details.year, customer_details.email, customer_details.nationalId, customer_details.phone);
+    fprintf(fptr, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n", reservationID, cst.room_id, roomStatue, cst.name, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.nationalId, cst.phone);
     fclose(fptr);
 }
 
-int validateCheckIn(long res_ID, int d, int m, int y)
+int validateCheckIn()
 {
+    long res_ID;
+    int d, m, y;
+    printw("Enter the reservation ID: ");
+    scanw("%ld", &res_ID);
+    printw("Enter the check-in date (day month year): ");
+    scanw("%d %d %d", &d, &m, &y);
     char line1[200];
     FILE *fptr1 = fopen("output/Reservations.txt", "r");
     FILE *tempFile = fopen("output/Tempr.txt", "w");
@@ -124,10 +169,11 @@ void check_in(int room_id)
     remove("output/Room.txt");
     rename("output/Temp.txt", "output/Room.txt");
 }
-void cancelReservation(long reservation_ID,int room_ID){
-     char line2[200],line3[200];
-    FILE* fptr2=fopen("output/reservation.txt","r");
-    FILE* tempFile2=fopen("output/tempr.txt","w");
+void cancelReservation(long reservation_ID, int room_ID)
+{
+    char line2[200], line3[200];
+    FILE *fptr2 = fopen("output/reservation.txt", "r");
+    FILE *tempFile2 = fopen("output/tempr.txt", "w");
     if (fptr2 == NULL || tempFile2 == NULL)
     {
         printf("Error: Could not open file to cancel reservation.\n");
@@ -135,7 +181,7 @@ void cancelReservation(long reservation_ID,int room_ID){
         fclose(tempFile2);
         return;
     }
-     FILE *fptr3 = fopen("output/Room.txt", "r");
+    FILE *fptr3 = fopen("output/Room.txt", "r");
     FILE *tempFile3 = fopen("output/Temp.txt", "w");
     if (fptr3 == NULL || tempFile3 == NULL)
     {
@@ -143,15 +189,18 @@ void cancelReservation(long reservation_ID,int room_ID){
         return;
     }
 
-    while (fgets(line3, sizeof(line3), fptr3)) {
+    while (fgets(line3, sizeof(line3), fptr3))
+    {
         int roomID, price;
         char status[20], category[20];
 
         sscanf(line3, "%d %s %s %d", &roomID, status, category, &price);
-        if (roomID == room_ID) {
+        if (roomID == room_ID)
+        {
             fprintf(tempFile3, "%d Available %s %d\n", roomID, category, price);
-        } 
-        else {
+        }
+        else
+        {
             fprintf(tempFile3, "%d %s %s %d\n", roomID, status, category, price);
         }
     }
@@ -161,8 +210,7 @@ void cancelReservation(long reservation_ID,int room_ID){
     remove("output/Room.txt");
     rename("output/Temp.txt", "output/Room.txt");
 
-    
-     int room, found = 0;
+    int room, found = 0;
     while (fgets(line2, sizeof(line2), fptr2))
     {
         long reservationID;
@@ -173,7 +221,8 @@ void cancelReservation(long reservation_ID,int room_ID){
 
         if (reservation_ID == reservationID || room_ID == room)
         {
-            if (strcmp(stat, "confirmed") == 0) {
+            if (strcmp(stat, "confirmed") == 0)
+            {
                 printf("Error: Cannot cancel a confirmed reservation.\n");
                 fclose(fptr2);
                 fclose(tempFile2);
@@ -183,13 +232,14 @@ void cancelReservation(long reservation_ID,int room_ID){
             found = 1;
             continue; // Skip writing this reservation to delete it
         }
-     
+
         fprintf(tempFile2, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n", reservationID, room, stat, name, numofNights, day, month, year, email, nID, phone);
     }
     fclose(fptr2);
     fclose(tempFile2);
 
-     if (!found) {
+    if (!found)
+    {
         printf("Error: Reservation ID or Room ID not found.\n");
         remove("output/tempr.txt");
         return;
@@ -197,6 +247,4 @@ void cancelReservation(long reservation_ID,int room_ID){
     remove("output/Reservations.txt");
     rename("output/Tempr.txt", "output/Reservations.txt");
     printf("Reservation successfully canceled.");
-
-
 }

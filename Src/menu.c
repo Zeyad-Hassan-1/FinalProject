@@ -108,48 +108,14 @@ void secondaryMenu()
             printw("Starting room reservation...\n");
             refresh();
             {
-                printw("Enter number of nights: ");
-                scanw("%d", &cst.numberOfnights);
-                printw("Enter day, month, year: ");
-                scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
-                printw("Enter name: ");
-                getstr(cst.name);
-                printw("Enter national ID: ");
-                getstr(cst.nationalId);
-                printw("Enter email: ");
-                getstr(cst.email);
-                printw("Enter phone: ");
-                getstr(cst.phone);
-                attron(COLOR_PAIR(3));
-                printw("Select a category: \n1. SeaView\n2. GardenView\n3. LakeView\n");
-                attroff(COLOR_PAIR(3));
-                int categoryChoice;
-                scanw("%d", &categoryChoice);
-
-                switch (categoryChoice)
-                {
-                case 1:
-                    strcpy(cst.catogary, "SeaView");
-                    break;
-                case 2:
-                    strcpy(cst.catogary, "GardenView");
-                    break;
-                case 3:
-                    strcpy(cst.catogary, "LakeView");
-                    break;
-                default:
-                    printw("Invalid choice! Defaulting to Standard.\n");
-                    strcpy(cst.catogary, "Standard");
-                    break;
-                }
-
-                RoomReservation(0, cst);
+                RoomReservation(0);
                 attron(COLOR_PAIR(4));
                 printw("Reservation saved!\n");
                 attroff(COLOR_PAIR(4));
                 refresh();
-                clear();
+                attron(COLOR_PAIR(3));
                 printw("Enter c to back to menu or any other key to Exit....");
+                attroff(COLOR_PAIR(3));
                 int choose = getch();
                 switch (choose)
                 {
@@ -159,8 +125,9 @@ void secondaryMenu()
 
                 default:
                     clear();
-                    printw("Quitting......");
-                    Quit();
+                    printw("Exiting the program...");
+                    refresh();
+                    return;
                     break;
                 }
             }
@@ -171,13 +138,7 @@ void secondaryMenu()
             printw("Check-In selected.\n");
             refresh();
             {
-                long resID;
-                int day, month, year;
-                printw("Enter the reservation ID: ");
-                scanw("%ld", &resID);
-                printw("Enter the check-in date (day month year): ");
-                scanw("%d %d %d", &day, &month, &year);
-                int validate = validateCheckIn(resID, day, month, year);
+                int validate = validateCheckIn();
                 if (validate != 0)
                 {
                     check_in(validate);
@@ -192,8 +153,9 @@ void secondaryMenu()
                     attroff(COLOR_PAIR(3));
                 }
                 refresh();
-                clear();
-                printw("Enter c to back to menu or any other key to Exit....");
+                attron(COLOR_PAIR(3));
+                printw("\nEnter c to back to menu or any other key to Exit....\n");
+                attroff(COLOR_PAIR(3));
                 int choose = getch();
                 switch (choose)
                 {
@@ -203,8 +165,9 @@ void secondaryMenu()
 
                 default:
                     clear();
-                    printw("Quitting......");
-                    Quit();
+                    printw("Exiting the program...");
+                    refresh();
+                    return;
                     break;
                 }
             }
@@ -215,18 +178,10 @@ void secondaryMenu()
             printw("View Customer Details...\n");
             refresh();
             {
-                long id;
-                attron(COLOR_PAIR(1));
-                printw("Enter reservation id or room id to view your data..\n");
-                attroff(COLOR_PAIR(1));
-                scanw("%ld", &id);
-                Customer csv = ViewCustomerDetails(id);
-                attron(COLOR_PAIR(2));
-                printw("Name : %s \n Phone Number: %s \n Email: %s \n National Id: %s \n Number of Nights: %d \n Check in date : %02d %02d %02d", csv.name, csv.phone, csv.email, csv.nationalId, csv.numberOfnights, csv.day, csv.month, csv.year);
-                attroff(COLOR_PAIR(2));
-                refresh();
-                clear();
-                printw("Enter c to back to menu or any other key to Exit....");
+                ViewCustomerDetails();
+                attron(COLOR_PAIR(3));
+                printw("\nEnter c to back to menu or any other key to Exit....\n");
+                attroff(COLOR_PAIR(3));
                 int choose = getch();
                 switch (choose)
                 {
@@ -236,8 +191,9 @@ void secondaryMenu()
 
                 default:
                     clear();
-                    printw("Quitting......");
-                    Quit();
+                    printw("Exiting the program...");
+                    refresh();
+                    return;
                     break;
                 }
             }
@@ -245,7 +201,7 @@ void secondaryMenu()
 
         case '4':
             clear();
-            printw("Exiting the program...");
+            printw("\nExiting the program...\n");
             refresh();
             return;
 

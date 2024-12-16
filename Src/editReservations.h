@@ -1,7 +1,7 @@
 #ifndef EDITRESERVATIONS_H
 #define EDITRESERVATIONS_H
 
-Customer ViewCustomerDetails(long id);
+Customer ViewCustomerDetails();
 int Quit();
 
 #endif
