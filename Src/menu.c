@@ -12,71 +12,110 @@ int isLoggedIn = 0;
 void mainMenu()
 {
     const char *mainChoices[] = {
-        "1. Login",
-        "2. Quit"};
+        "Login",
+        "Quit"};
     int n_mainChoices = sizeof(mainChoices) / sizeof(mainChoices[0]);
 
-    WINDOW *menu_win = newwin(10, 50, 5, 10); 
+    int screen_height, screen_width;
+    getmaxyx(stdscr, screen_height, screen_width);
+
+    // حساب حجم النافذة
+    int win_height = n_mainChoices + 4;
+    int win_width = 30;
+    int starty = (screen_height - win_height) / 2;
+    int startx = (screen_width - win_width) / 2;
+
+    WINDOW *menu_win = newwin(win_height, win_width, starty, startx);
+    keypad(menu_win, TRUE);
     box(menu_win, 0, 0);
     refresh();
-    wrefresh(menu_win); 
+    wrefresh(menu_win);
+
+    int highlight = 0;
+    int choice = -1;
+
     while (!isLoggedIn)
     {
-        wclear(menu_win); 
-        box(menu_win, 0, 0); 
+        wclear(menu_win);
+        box(menu_win, 0, 0);
+
         for (int i = 0; i < n_mainChoices; i++)
         {
-            wattron(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
-            mvwprintw(menu_win, 2 + i, 2, mainChoices[i]); 
-            wattroff(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
+            if (i == highlight)
+            {
+                wattron(menu_win, COLOR_PAIR(9));
+                mvwprintw(menu_win, 2 + i, 2, "%s", mainChoices[i]);
+                wattroff(menu_win, COLOR_PAIR(9));
+            }
+            else
+            {
+                wattron(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
+                mvwprintw(menu_win, 2 + i, 2, "%s", mainChoices[i]);
+                wattroff(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
+            }
         }
         wrefresh(menu_win);
 
-        int choice = wgetch(menu_win);
-
-        switch (choice)
+        int key = wgetch(menu_win);
+        switch (key)
         {
-        case '1':
-            clear();
-            printw("Login...\n");
-            refresh();
-            {
-                int loginSuccess = login();
-                if (loginSuccess)
-                {
-                    isLoggedIn = 1;
-                    attron(COLOR_PAIR(4));
-                    printw("Login successful! Redirecting...\n");
-                    printw("Press any Key to continue...\n");
-                    attroff(COLOR_PAIR(4));
-                    refresh();
-                    getch();
-                }
-                else
-                {
-                    attron(COLOR_PAIR(3));
-                    printw("Login failed. Try again.\n");
-                    attroff(COLOR_PAIR(3));
-                    refresh();
-                    getch();
-                }
-            }
+        case KEY_UP:
+            highlight = (highlight - 1 + n_mainChoices) % n_mainChoices;
             break;
 
-        case '2':
-            clear();
-            printw("Exiting the program...");
-            refresh();
-            return;
+        case KEY_DOWN:
+            highlight = (highlight + 1) % n_mainChoices;
+            break;
+
+        case '\n':
+            choice = highlight + 1;
+            break;
 
         default:
-            clear();
-            attron(COLOR_PAIR(3));
-            printw("Invalid choice! Please select a valid option.\n");
-            attroff(COLOR_PAIR(3));
-            refresh();
-            getch();
             break;
+        }
+
+        if (choice != -1)
+        {
+            clear();
+            printw("You selected: %s\n", mainChoices[choice - 1]);
+            refresh();
+
+            switch (choice)
+            {
+            case 1:
+                printw("Login...\n");
+                {
+                    int loginSuccess = login();
+                    if (loginSuccess)
+                    {
+                        isLoggedIn = 1;
+                        attron(COLOR_PAIR(4));
+                        printw("Login successful! Redirecting...\n");
+                        printw("Press any Key to continue...\n");
+                        getch();
+                        attroff(COLOR_PAIR(4));
+                    }
+                    else
+                    {
+                        attron(COLOR_PAIR(3));
+                        printw("Login failed. Try again.\n");
+                        attroff(COLOR_PAIR(3));
+                    }
+                }
+                break;
+
+            case 2:
+                printw("Exiting the program...\n");
+                refresh();
+                return;
+
+            default:
+                printw("Invalid choice!\n");
+                break;
+            }
+
+            choice = -1;
         }
     }
 
@@ -88,143 +127,161 @@ void secondaryMenu()
     Customer cst;
 
     const char *choices[] = {
-        "1. Room Reservation",
-        "2. Check-In",
-        "3. View Customer Details",
-        "4. Quit"};
+        "Reserve a Room",
+        "Check-In",
+        "Cancel Reservation",
+        "Check-Out",
+        "Check Room Availability",
+        "View Customer Details",
+        "Edit Reservation Details",
+        "Query(Search)",
+        "Reservation Report",
+        "Exit"};
     int n_choices = sizeof(choices) / sizeof(choices[0]);
 
-    WINDOW *menu_win = newwin(10, 50, 5, 10); 
+    int screen_height, screen_width;
+    getmaxyx(stdscr, screen_height, screen_width);
+
+    int win_height = n_choices + 4;
+    int win_width = 50;
+    int starty = (screen_height - win_height) / 2;
+    int startx = (screen_width - win_width) / 2;
+
+    WINDOW *menu_win = newwin(win_height, win_width, starty, startx);
+    keypad(menu_win, TRUE);
     box(menu_win, 0, 0);
     refresh();
     wrefresh(menu_win);
 
+    int highlight = 0;
+    int choice = -1;
+
     while (1)
     {
         wclear(menu_win);
-        box(menu_win, 0, 0); 
+        box(menu_win, 0, 0);
+
         for (int i = 0; i < n_choices; i++)
         {
-            wattron(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
-            mvwprintw(menu_win, 2 + i, 2, choices[i]); 
-            wattroff(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
+            if (i == highlight)
+            {
+                wattron(menu_win, COLOR_PAIR(4));
+                mvwprintw(menu_win, 2 + i, 2, "%s", choices[i]);
+                wattroff(menu_win, COLOR_PAIR(4));
+            }
+            else
+            {
+                wattron(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
+                mvwprintw(menu_win, 2 + i, 2, "%s", choices[i]);
+                wattroff(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
+            }
         }
         wrefresh(menu_win);
 
-        int choice = wgetch(menu_win);
-
-        switch (choice)
+        int key = wgetch(menu_win);
+        switch (key)
         {
-        case '1':
+        case KEY_UP:
+            highlight = (highlight - 1 + n_choices) % n_choices;
+            break;
+
+        case KEY_DOWN:
+            highlight = (highlight + 1) % n_choices;
+            break;
+
+        case '\n':
+            choice = highlight + 1;
+            break;
+
+        default:
+            break;
+        }
+
+        if (choice != -1)
+        {
             clear();
-            printw("Starting room reservation...\n");
+            printw("You selected: %s\n", choices[choice - 1]);
             refresh();
+
+            switch (choice)
             {
+            case 1:
                 RoomReservation(0);
                 attron(COLOR_PAIR(4));
                 printw("Reservation saved!\n");
                 attroff(COLOR_PAIR(4));
-                refresh();
-                attron(COLOR_PAIR(3));
-                printw("Enter c to back to menu or any other key to Exit....");
-                attroff(COLOR_PAIR(3));
-                int choose = getch();
-                switch (choose)
-                {
-                case 'c':
-                    refresh();
-                    break;
+                break;
 
-                default:
-                    clear();
-                    printw("Exiting the program...");
-                    refresh();
-                    return;
-                    break;
-                }
-            }
-            break;
-
-        case '2':
-            clear();
-            printw("Check-In selected.\n");
-            refresh();
-            {
-                int validate = validateCheckIn();
-                if (validate != 0)
+            case 2:
+                printw("Check-In selected.\n");
                 {
-                    check_in(validate);
-                    attron(COLOR_PAIR(4));
-                    printw("Your reservation was confirmed successfully.");
-                    attroff(COLOR_PAIR(4));
+                    int validate = validateCheckIn();
+                    if (validate != 0)
+                    {
+                        check_in(validate);
+                        attron(COLOR_PAIR(4));
+                        printw("Your reservation was confirmed successfully.");
+                        attroff(COLOR_PAIR(4));
+                    }
+                    else
+                    {
+                        attron(COLOR_PAIR(3));
+                        printw("Reservation not found or invalid details.\n");
+                        attroff(COLOR_PAIR(3));
+                    }
                 }
-                else
-                {
-                    attron(COLOR_PAIR(3));
-                    printw("Reservation not found or invalid details.\n");
-                    attroff(COLOR_PAIR(3));
-                }
-                refresh();
-                attron(COLOR_PAIR(3));
-                printw("\nEnter c to back to menu or any other key to Exit....\n");
-                attroff(COLOR_PAIR(3));
-                int choose = getch();
-                switch (choose)
-                {
-                case 'c':
-                    refresh();
-                    break;
+                break;
 
-                default:
-                    clear();
-                    printw("Exiting the program...");
-                    refresh();
-                    return;
-                    break;
-                }
-            }
-            break;
+            case 3:
+                printw("Cancel Reservation Selected...\n");
+                break;
 
-        case '3':
-            clear();
-            printw("View Customer Details...\n");
-            refresh();
-            {
+            case 4:
+                printw("Check-Out Selected...\n");
+                break;
+
+            case 5:
+                printw("Check Room Availability Selected...\n");
+                break;
+
+            case 6:
+                printw("View Customer Details...\n");
                 ViewCustomerDetails();
-                attron(COLOR_PAIR(3));
-                printw("\nEnter c to back to menu or any other key to Exit....\n");
-                attroff(COLOR_PAIR(3));
-                int choose = getch();
-                switch (choose)
-                {
-                case 'c':
-                    refresh();
-                    break;
+                break;
 
-                default:
-                    clear();
-                    printw("Exiting the program...");
-                    refresh();
-                    return;
-                    break;
-                }
+            case 7:
+                printw("Edit Reservation Selected...\n");
+                break;
+
+            case 8:
+                printw("Query(Search) Selected...\n");
+                break;
+
+            case 9:
+                printw("Reservation Report Selected...\n");
+                break;
+
+            case 10:
+                printw("\nExiting the program...\n");
+                refresh();
+                return;
+
+            default:
+                printw("Invalid choice!\n");
+                break;
             }
-            break;
 
-        case '4':
-            clear();
-            printw("\nExiting the program...\n");
-            refresh();
-            return;
+            printw("\nPress 'c' to go back to the menu or any other key to exit...\n");
+            int ch = getch();
+            if (ch != 'c')
+            {
+                clear();
+                printw("Exiting the program...\n");
+                refresh();
+                return;
+            }
 
-        default:
-            clear();
-            attron(COLOR_PAIR(3));
-            printw("Invalid choice! Please select a valid option.\n");
-            attroff(COLOR_PAIR(3));
-            refresh();
-            getch();
-            break;
+            choice = -1;
         }
     }
 }

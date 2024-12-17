@@ -198,6 +198,7 @@ void check_in(int room_id)
     remove("output/Room.txt");
     rename("output/Temp.txt", "output/Room.txt");
 }
+
 void cancelReservation(long reservation_ID, int room_ID)
 {
     char line2[200], line3[200];
