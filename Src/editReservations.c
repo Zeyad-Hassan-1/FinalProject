@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "reservations.h"
-#include "editReservations.h"
+#include "./headerFiles/reservations.h"
+#include "./headerFiles/editReservations.h"
 #include <curses.h>
 
 Customer ViewCustomerDetails()

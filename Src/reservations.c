@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "reservations.h"
 #include <curses.h>
-#include "validation.h"
+#include "./headerFiles/reservations.h"
+#include "./headerFiles/validation.h"
 
 long generateUniqueID()
 {

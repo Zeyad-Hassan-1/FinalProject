@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <curses.h>
-#include "login.h"
-#include "reservations.h"
-#include "editReservations.h"
-#include "menu.h"
+#include "./headerFiles/login.h"
+#include "./headerFiles/reservations.h"
+#include "./headerFiles/editReservations.h"
+#include "./headerFiles/menu.h"
 
 int isLoggedIn = 0;
 
@@ -16,19 +16,18 @@ void mainMenu()
         "2. Quit"};
     int n_mainChoices = sizeof(mainChoices) / sizeof(mainChoices[0]);
 
-    WINDOW *menu_win = newwin(10, 50, 5, 10);  // Create a window for the menu
-    box(menu_win, 0, 0);  // Draw the border around the window
+    WINDOW *menu_win = newwin(10, 50, 5, 10); 
+    box(menu_win, 0, 0);
     refresh();
-    wrefresh(menu_win);  // Refresh the menu window
-
+    wrefresh(menu_win); 
     while (!isLoggedIn)
     {
-        wclear(menu_win);  // Clear the window content
-        box(menu_win, 0, 0);  // Draw the border again
+        wclear(menu_win); 
+        box(menu_win, 0, 0); 
         for (int i = 0; i < n_mainChoices; i++)
         {
             wattron(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
-            mvwprintw(menu_win, 2 + i, 2, mainChoices[i]);  // Print options inside the window
+            mvwprintw(menu_win, 2 + i, 2, mainChoices[i]); 
             wattroff(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
         }
         wrefresh(menu_win);
@@ -48,6 +47,7 @@ void mainMenu()
                     isLoggedIn = 1;
                     attron(COLOR_PAIR(4));
                     printw("Login successful! Redirecting...\n");
+                    printw("Press any Key to continue...\n");
                     attroff(COLOR_PAIR(4));
                     refresh();
                     getch();
@@ -63,7 +63,7 @@ void mainMenu()
             }
             break;
 
-        case '2': // Exit
+        case '2':
             clear();
             printw("Exiting the program...");
             refresh();
@@ -94,19 +94,19 @@ void secondaryMenu()
         "4. Quit"};
     int n_choices = sizeof(choices) / sizeof(choices[0]);
 
-    WINDOW *menu_win = newwin(10, 50, 5, 10);  // Create a window for the secondary menu
-    box(menu_win, 0, 0);  // Draw the border around the window
+    WINDOW *menu_win = newwin(10, 50, 5, 10); 
+    box(menu_win, 0, 0);
     refresh();
     wrefresh(menu_win);
 
     while (1)
     {
         wclear(menu_win);
-        box(menu_win, 0, 0);  // Draw the border again
+        box(menu_win, 0, 0); 
         for (int i = 0; i < n_choices; i++)
         {
             wattron(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
-            mvwprintw(menu_win, 2 + i, 2, choices[i]);  // Print options inside the window
+            mvwprintw(menu_win, 2 + i, 2, choices[i]); 
             wattroff(menu_win, COLOR_PAIR(i % 2 == 0 ? 1 : 2));
         }
         wrefresh(menu_win);

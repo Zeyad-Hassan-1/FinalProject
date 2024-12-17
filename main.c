@@ -1,24 +1,24 @@
 #include <stdlib.h>
 #include <curses.h>
-#include "Src/menu.h"
+#include "Src/headerFiles/menu.h"
 
 int main()
 {
-    initscr();           // بدء شاشة ncurses
-    cbreak();            // إدخال الأحرف مباشرة دون انتظار Enter
-    keypad(stdscr, TRUE); // تفعيل مفاتيح الأسهم
+    initscr();           
+    cbreak();           
+    keypad(stdscr, TRUE); 
 
-    if (has_colors()) // تفعيل الألوان
+    if (has_colors())
     {
         start_color();
-        init_pair(1, COLOR_WHITE, COLOR_BLUE);  // خلفية زرقاء
-        init_pair(2, COLOR_YELLOW, COLOR_BLACK); // نص أصفر
-        init_pair(3, COLOR_RED, COLOR_BLACK);    // نص أحمر
-        init_pair(4, COLOR_GREEN, COLOR_BLACK);  // نص أخضر
+        init_pair(1, COLOR_WHITE, COLOR_BLUE);
+        init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(3, COLOR_RED, COLOR_BLACK); 
+        init_pair(4, COLOR_GREEN, COLOR_BLACK); 
     }
 
-    mainMenu(); // استدعاء القائمة الرئيسية
+    mainMenu();
 
-    endwin(); // إنهاء ncurses
+    endwin(); 
     return 0;
 }
