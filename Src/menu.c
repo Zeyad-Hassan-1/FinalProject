@@ -6,6 +6,7 @@
 #include "./headerFiles/reservations.h"
 #include "./headerFiles/editReservations.h"
 #include "./headerFiles/menu.h"
+#include "headerFiles/tracking.h"
 
 int isLoggedIn = 0;
 
@@ -242,6 +243,7 @@ void secondaryMenu()
 
             case 5:
                 printw("Check Room Availability Selected...\n");
+                track();
                 break;
 
             case 6:

@@ -163,44 +163,7 @@ int validateCheckIn()
     remove("output/Reservations.txt");
     rename("output/Tempr.txt", "output/Reservations.txt");
 
-    if(room){
-        changeRoomStat(room);
+    if(room)
         return room;
-    }
     return 0;
 }
-/*
-void check_in(int room_id)
-{
-    FILE *file = fopen("output/Room.txt", "r");
-    FILE *tempFile = fopen("output/Temp.txt", "w");
-    if (file == NULL || tempFile == NULL)
-    {
-        printf("Error: Could not open file.\n");
-        return;
-    }
-
-    char line[200];
-
-    while (fgets(line, sizeof(line), file))
-    {
-        int roomID, price;
-        char status[20], category[20];
-
-        sscanf(line, "%d %s %s %d", &roomID, status, category, &price);
-
-        if (roomID == room_id && strcmp(status, "Available") == 0)
-        {
-            strcpy(status, "Reserved");
-        }
-
-        fprintf(tempFile, "%d %s %s %d\n", roomID, status, category, price);
-    }
-
-    fclose(file);
-    fclose(tempFile);
-
-    remove("output/Room.txt");
-    rename("output/Temp.txt", "output/Room.txt");
-}
-*/
