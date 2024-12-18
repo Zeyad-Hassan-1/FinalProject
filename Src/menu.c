@@ -218,7 +218,6 @@ void secondaryMenu()
                     int validate = validateCheckIn();
                     if (validate != 0)
                     {
-                        check_in(validate);
                         attron(COLOR_PAIR(4));
                         printw("Your reservation was confirmed successfully.");
                         attroff(COLOR_PAIR(4));
@@ -234,6 +233,7 @@ void secondaryMenu()
 
             case 3:
                 printw("Cancel Reservation Selected...\n");
+                cancel();
                 break;
 
             case 4:

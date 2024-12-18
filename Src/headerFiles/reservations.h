@@ -18,6 +18,6 @@ typedef struct {
 void RoomReservation(int statue);
 void check_in(int room_id);
 int validateCheckIn();
-void cancelReservation (long reservation_ID,int room_ID);
+
 
 #endif
