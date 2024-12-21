@@ -20,7 +20,6 @@ void mainMenu()
     int screen_height, screen_width;
     getmaxyx(stdscr, screen_height, screen_width);
 
-    // حساب حجم النافذة
     int win_height = n_mainChoices + 4;
     int win_width = 30;
     int starty = (screen_height - win_height) / 2;
@@ -257,7 +256,7 @@ void secondaryMenu()
 
             case 8:
                 printw("Query(Search) Selected...\n");
-                find_by_name();
+                query();
                 break;
 
             case 9:

@@ -6,62 +6,315 @@
 
 void track()
 {
+    initscr(); // Initialize the curses mode
     FILE *room;
     room = fopen("output/Room.txt", "r");
-    char line[200];
-    while (fgets(line, 200, room))
+    if (room == NULL)
     {
-        printw("%s", line);
-        refresh();
+        printw("error opening file\n\n");
+        exit(1);
     }
 
+    clear();
+    refresh(); // Refresh the main screen
+
+    int width = COLS - 4;
+    int height = LINES - 4;
+    int startx = 2;
+    int starty = 2;
+
+    // Draw border using box
+    WINDOW *win = newwin(height, width, starty, startx);
+    box(win, 0, 0);
+
+    char line[200];
+    int y = 1;
+    while (fgets(line, 200, room))
+    {
+        int len = strlen(line);
+        int x = (width - len) / 2;   // Center horizontally
+        wattron(win, COLOR_PAIR(2)); // Change color
+        mvwprintw(win, y++, x, "%s", line);
+        wattroff(win, COLOR_PAIR(2)); // Turn off color
+    }
+
+    wrefresh(win);
     fclose(room);
+    delwin(win);
+    endwin(); // End curses mode
 }
 
-void find_by_name()
+void find_by_name(char *name)
 {
+    initscr(); // Initialize the curses mode
+    customer_information customer;
 
     FILE *f;
-    customer_information customer;
-    char line[1000];
-    char name[100];
-    refresh();
-    printw("write customer name:");
-    getstr(name);
     f = fopen("output/Reservations.txt", "r");
+    if (f == NULL)
+    {
+        printw("error opening file\n\n");
+        exit(1);
+    }
+    clear();
+    refresh(); // Refresh the main screen
+    int width = COLS - 4;
+    int height = LINES - 4;
+    int startx = 2;
+    int starty = 2;
+
+    // Draw border using box
+    WINDOW *win = newwin(height, width, starty, startx);
+    box(win, 0, 0);
+    mvwprintw(win, 0, (width - strlen("Customer Information")) / 2, "Customer Information");
+    char line[1000];
+    while (1)
+    {
+        if (fgets(line, 1000, f) == NULL)
+        {
+            wattron(win, COLOR_PAIR(2));
+            mvwprintw(win, height / 2, (width - strlen("customer not found")) / 2, "customer not found");
+            wattroff(win, COLOR_PAIR(2));
+            break;
+        }
+
+        sscanf(line, "%d,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%d,%d", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.national_ID, &customer.Contact_information.mobile_number);
+
+        if (strcmp(name, customer.name) == 0)
+        {
+            wattron(win, COLOR_PAIR(2));
+            mvwprintw(win, 2, (width - strlen(customer.name) - 7) / 2, "Name: %s", customer.name);
+            mvwprintw(win, 3, (width - 15) / 2, "Reservation ID: %d", customer.reservation_ID);
+            mvwprintw(win, 4, (width - 9) / 2, "Room ID: %d", customer.room_information.room_ID);
+            mvwprintw(win, 5, (width - strlen(customer.reservation_state) - 20) / 2, "Reservation Status: %s", customer.reservation_state);
+            mvwprintw(win, 6, (width - 18) / 2, "Number of Nights: %d", customer.Number_of_nights);
+            mvwprintw(win, 7, (width - 20) / 2, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
+            mvwprintw(win, 8, (width - strlen(customer.Contact_information.email) - 8) / 2, "Email: %s", customer.Contact_information.email);
+            mvwprintw(win, 9, (width - 13) / 2, "National ID: %d", customer.Contact_information.national_ID);
+            mvwprintw(win, 10, (width - 8) / 2, "Mobile: %d", customer.Contact_information.mobile_number);
+            wattroff(win, COLOR_PAIR(2));
+            break;
+        }
+    }
+    wrefresh(win);
+    fclose(f);
+    delwin(win);
+    endwin(); // End curses mode
+}
+
+int find_by_roomID(int rid)
+{
+    initscr(); // Initialize the curses mode
+    customer_information room;
+
+    FILE *f;
+    f = fopen("output/Room.txt", "r");
     if (f == NULL)
     {
         printw("error opening file:");
         exit(1);
     }
-    int found = 1;
-    while (found)
+
+    clear();
+    refresh(); // Refresh the main screen
+    int width = COLS - 4;
+    int height = LINES - 4;
+    int startx = 2;
+    int starty = 2;
+
+    // Draw border using box
+    WINDOW *win = newwin(height, width, starty, startx);
+    box(win, 0, 0);
+    mvwprintw(win, 0, (width - strlen("Room Information")) / 2, "Room Information");
+
+    char line[1000];
+    while (1)
     {
         if (fgets(line, 1000, f) == NULL)
         {
-            printw("customer not found");
+            wattron(win, COLOR_PAIR(2));
+            mvwprintw(win, height / 2, (width - strlen("this room not found")) / 2, "this room not found");
+            wattroff(win, COLOR_PAIR(2));
             break;
         }
-        sscanf(line, "%d,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%d,%d", &customer.reservation_ID, &customer.room_ID, customer.reservation_state, customer.name, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.national_ID, &customer.Contact_information.mobile_number);
-        if (strcmp(name, customer.name) == 0)
+
+        sscanf(line, "%d %s %s %d", &room.room_information.room_ID, room.room_information.room_state, room.room_information.Room_Category, &room.room_information.room_price);
+
+        if (rid == room.room_information.room_ID)
         {
-            clear();
-            int startx = (COLS - 40) / 2; // Center horizontally
-            attron(COLOR_PAIR(4));
-            mvprintw(1, startx, "Name: %s", customer.name);
-            mvprintw(2, startx, "Reservation ID: %d", customer.reservation_ID);
-            mvprintw(3, startx, "Room ID: %d", customer.room_ID);
-            mvprintw(4, startx, "Reservation Status: %s", customer.reservation_state);
-            mvprintw(5, startx, "Number of Nights: %d", customer.Number_of_nights);
-            mvprintw(6, startx, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
-            mvprintw(7, startx, "Email: %s", customer.Contact_information.email);
-            mvprintw(8, startx, "National ID: %d", customer.Contact_information.national_ID);
-            mvprintw(9, startx, "Mobile: %d", customer.Contact_information.mobile_number);
-            refresh();
-            attroff(COLOR_PAIR(4));
+            wattron(win, COLOR_PAIR(2));
+            mvwprintw(win, 2, (width - strlen("Room ID:") - 5) / 2, "Room ID: %d", room.room_information.room_ID);
+            mvwprintw(win, 3, (width - strlen("Room State:") - 9) / 2, "Room State: %s", room.room_information.room_state);
+            mvwprintw(win, 4, (width - strlen("Room Category:") - 13) / 2, "Room Category: %s", room.room_information.Room_Category);
+            mvwprintw(win, 5, (width - strlen("Room Price:") - 11) / 2, "Room Price: %d", room.room_information.room_price);
+            wattroff(win, COLOR_PAIR(2));
+
+            if (strcmp(room.room_information.room_state, "Reserved") == 0)
+            {
+                customer_information customer;
+
+                FILE *fc;
+                fc = fopen("output/Reservations.txt", "r");
+                if (fc == NULL)
+                {
+                    printw("error opening file:");
+                    exit(1);
+                }
+
+                char linec[1000];
+                while (1)
+                {
+                    if (fgets(linec, 1000, fc) == NULL)
+                    {
+                        break;
+                    }
+                    sscanf(linec, "%d,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%d,%d", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.national_ID, &customer.Contact_information.mobile_number);
+
+                    if (rid == customer.room_information.room_ID)
+                    {
+                        wattron(win, COLOR_PAIR(2));
+                        mvwprintw(win, 7, (width - strlen("Guest Name:") - 11) / 2, "Guest Name: %s", customer.name);
+                        mvwprintw(win, 8, (width - strlen("Reservation ID:") - 15) / 2, "Reservation ID: %d", customer.reservation_ID);
+                        mvwprintw(win, 9, (width - strlen("Reservation Status:") - 19) / 2, "Reservation Status: %s", customer.reservation_state);
+                        mvwprintw(win, 10, (width - strlen("Number of Nights:") - 17) / 2, "Number of Nights: %d", customer.Number_of_nights);
+                        mvwprintw(win, 11, (width - strlen("Check-in Date:") - 15) / 2, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
+                        mvwprintw(win, 12, (width - strlen("Email:") - 7) / 2, "Email: %s", customer.Contact_information.email);
+                        mvwprintw(win, 13, (width - strlen("National ID:") - 13) / 2, "National ID: %d", customer.Contact_information.national_ID);
+                        mvwprintw(win, 14, (width - strlen("Mobile:") - 7) / 2, "Mobile: %d", customer.Contact_information.mobile_number);
+                        wattroff(win, COLOR_PAIR(2));
+                        break;
+                    }
+                }
+                fclose(fc);
+            }
+            break;
         }
     }
-
+    wrefresh(win);
     fclose(f);
-    return;
+    delwin(win);
+    endwin(); // End curses mode
+    return 0;
+}
+
+void statues_room(char *state)
+{
+    initscr(); // Initialize the curses mode
+    customer_information room;
+
+    FILE *f;
+    f = fopen("output/Room.txt", "r");
+    if (f == NULL)
+    {
+        printw("error opening file\n\n");
+        exit(1);
+    }
+
+    clear();
+    refresh(); // Refresh the main screen
+    int width = COLS - 4;
+    int height = LINES - 4;
+    int startx = 2;
+    int starty = 2;
+
+    // Draw border using box
+    WINDOW *win = newwin(height, width, starty, startx);
+    box(win, 0, 0);
+    mvwprintw(win, 0, (width - strlen("Room Status")) / 2, "Room Status");
+
+    char line[1000];
+    int y = 2;
+    while (1)
+    {
+        if (fgets(line, 1000, f) == NULL)
+        {
+            break;
+        }
+
+        sscanf(line, "%d %s %s %d", &room.room_information.room_ID, room.room_information.room_state, room.room_information.Room_Category, &room.room_information.room_price);
+
+        if (strcmp(state, room.room_information.room_state) == 0)
+        {
+            wattron(win, COLOR_PAIR(2));
+            mvwprintw(win, y++, (width - strlen("Room ID:") - 5) / 2, "Room ID: %d", room.room_information.room_ID);
+            mvwprintw(win, y++, (width - strlen("Room Category:") - 13) / 2, "Room Category: %s", room.room_information.Room_Category);
+            mvwprintw(win, y++, (width - strlen("Room Price:") - 11) / 2, "Room Price: %d", room.room_information.room_price);
+            wattroff(win, COLOR_PAIR(2));
+        }
+    }
+    wrefresh(win);
+    fclose(f);
+    delwin(win);
+    endwin(); // End curses mode
+}
+
+void query()
+{
+    clear();
+    refresh(); // Refresh the main screen
+
+    int startx = (COLS - 70) / 2; // Center horizontally
+    int starty = 2;               // Start a few lines down from the top
+
+    WINDOW *win = newwin(20, 70, starty, startx);
+    box(win, 0, 0);
+    mvwprintw(win, 1, (70 - strlen("Look Up Information")) / 2, "Look Up Information");
+
+    attron(COLOR_PAIR(2));
+    mvwprintw(win, 3, 2, "1. Inquire about guest information by customer name");
+    mvwprintw(win, 5, 2, "2. Inquire about room and guest information by room number");
+    mvwprintw(win, 7, 2, "3. Inquire about available and reserved rooms by room state");
+    mvwprintw(win, 9, 2, "What do you want: ");
+    attroff(COLOR_PAIR(2));
+
+    wrefresh(win);
+
+    int i = wgetch(win) - '0';
+
+    if (i == 1)
+    {
+        char name[100];
+        mvwprintw(win, 11, 2, "Enter the customer name: ");
+        wrefresh(win);
+        wgetstr(win, name);
+        clear();
+        find_by_name(name);
+    }
+    else if (i == 2)
+    {
+        int rid;
+        mvwprintw(win, 11, 2, "Enter the room number: ");
+        wrefresh(win);
+        wscanw(win, "%d", &rid);
+        clear();
+        find_by_roomID(rid);
+    }
+    else if (i == 3)
+    {
+        char state[100];
+        mvwprintw(win, 11, 2, "Enter 'a' for available rooms or 'r' for reserved rooms: ");
+        wrefresh(win);
+        int choose = wgetch(win);
+        clear();
+        if (choose == 'a')
+        {
+            statues_room("Available");
+        }
+        else if (choose == 'r')
+        {
+            statues_room("Reserved");
+        }
+        else
+        {
+            mvprintw(starty + 14, startx, "This option not found\n\n");
+        }
+    }
+    else
+    {
+        mvprintw(starty + 12, startx, "This option not found\n\n");
+    }
+
+    refresh();
+    delwin(win);
+    endwin(); // End curses mode
 }
