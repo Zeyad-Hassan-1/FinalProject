@@ -257,6 +257,7 @@ void secondaryMenu()
 
             case 8:
                 printw("Query(Search) Selected...\n");
+                find_by_name();
                 break;
 
             case 9:
@@ -273,8 +274,14 @@ void secondaryMenu()
                 break;
             }
 
-            printw("\nPress 'c' to go back to the menu or any other key to exit...\n");
+            int msg_y = (int)(screen_height * 0.8);
+            int msg_x = (screen_width - strlen("Press 'c' to go back to the menu or any other key to exit...")) / 2;
+            attron(COLOR_PAIR(3));
+            mvprintw(msg_y, msg_x, "Press 'c' to go back to the menu or any other key to exit...");
+            attroff(COLOR_PAIR(3));
             int ch = getch();
+            clear();
+            refresh();
             if (ch != 'c')
             {
                 clear();

@@ -5,35 +5,29 @@
 #include "./headerFiles/login.h"
 #include "curses.h"
 
-int check(char *username, char *password)
-{
-    FILE *file = fopen("output/users.txt", "r");
 
-    if (file == NULL)
+int check_info(char *username, char *password)
+{
+    FILE *f2;
+    f2 = fopen("output/users.txt", "r");
+    char line[max_linelength];
+    char st_username[max_usernamelength];
+    char st_password[max_passwordlength];
+    if (f2 == NULL)
     {
-        printf("Error: Unable to open 'users.txt' file.\n");
+        printf("file not found\n");
         return 0;
     }
-
-    char line[Max_Line];
-    char file_username[20];
-    char file_password[20];
-
-    while (fgets(line, Max_Line, file) != NULL)
+    while (fgets(line, sizeof(line), f2))
     {
-        sscanf(line, "%s %s", file_username, file_password);
-
-        if (file_username != NULL && file_password != NULL)
+        sscanf(line, "%s %s", st_username, st_password);
+        if (strcmp(username, st_username) == 0 && strcmp(password, st_password) == 0)
         {
-            if (strcmp(file_username, username) == 0 && strcmp(file_password, password) == 0)
-            {
-                fclose(file);
-                return 1;
-            }
+            fclose(f2);
+            return 1;
         }
     }
-
-    fclose(file);
+    fclose(f2);
     return 0;
 }
 
@@ -50,7 +44,7 @@ int login()
         getstr(password);
         refresh();
 
-        if (check(username, password))
+        if (check_info(username, password))
         {
             clear();
             printw("Login successful! Access granted.\n");
@@ -61,6 +55,8 @@ int login()
         {
             clear();
             printw("Invalid username or password. Please try again.\n");
+            printw("Press any key to try again...");
+            getch();
             refresh();
         }
     }

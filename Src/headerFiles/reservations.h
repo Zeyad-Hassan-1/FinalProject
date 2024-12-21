@@ -3,15 +3,15 @@
 
 typedef struct {
     long reservationID;
-    char name[20];
-    char nationalId[20];
-    char email[20];
+    int room_id;
     char status[20]; 
+    char name[20];
+    int numberOfnights;
+    int day, month, year;
+    char email[20];
     char phone[20];
     char catogary[20];
-    int day, month, year;
-    int room_id;
-    int numberOfnights;
+    char nationalId[20];
 } Customer;
 
 

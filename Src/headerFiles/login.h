@@ -2,10 +2,17 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
-#define Max 50
-#define Max_Line 100
+#define max_usernamelength 50
+#define max_passwordlength 50
+#define max_linelength 100
 
 // Function to handle the login process
+int check_info(char *username,char *password);
 int login();
 
 #endif // LOGIN_H
+
+/*
+
+
+*/

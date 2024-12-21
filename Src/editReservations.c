@@ -61,27 +61,25 @@ int cancel()
     char reservation[200];
     while (fgets(reservation, sizeof(reservation), res))
     {
-        long reservationId;
-        int roomId, numofNights, day, month, year;
-        char stat[20], name[20], email[20], nId[20], phone[20];
+        Customer cust;
 
         sscanf(reservation, "%ld,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%[^,],%s", 
-               &reservationId, &roomId, stat, name, &numofNights, 
-               &day, &month, &year, email, nId, phone);
+               &cust.reservationID, &cust.room_id, cust.status, cust.name, &cust.numberOfnights, 
+               &cust.day, &cust.month, &cust.year, cust.email, cust.nationalId, cust.phone);
 
-        if ((id == reservationId || id == roomId) && !strcmp(stat, "unconfirmed"))
+        if ((id == cust.reservationID || id == cust.room_id) && !strcmp(cust.status, "unconfirmed"))
         {
             found = 1;
             clear();
             printw("Reservation cancelled successfully\n");
             refresh();
-            room_id = roomId; // حفظ ID الغرفة لإلغاء الحجز
+            room_id = cust.room_id;
             continue;
         }
 
         fprintf(temp, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n",
-                reservationId, roomId, stat, name, numofNights, 
-                day, month, year, email, nId, phone);
+                cust.reservationID, cust.room_id, cust.status, cust.name, cust.numberOfnights, 
+                cust.day, cust.month, cust.year, cust.email, cust.nationalId, cust.phone);
     }
 
     fclose(res);
