@@ -36,6 +36,7 @@ void cancel()
 {
     long id;
     int room_id = 0, found = 0;
+    int deletedLine;
     FILE *res = fopen("output/Reservations.txt", "r");
     if (!res)
     {
@@ -49,7 +50,7 @@ void cancel()
 
     char reservation[200];
     Customer customers[200];
-    int i = 0, deletedLine;
+    int i = 0;
     while (fgets(reservation, sizeof(reservation), res))
     {
 
@@ -75,11 +76,11 @@ void cancel()
         if (j != deletedLine)
         {
             fprintf(res, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", customers[j].reservationID, customers[j].room_id, customers[j].status, customers[j].name, customers[j].nationalId, customers[j].numberOfnights, customers[j].day, customers[j].month, customers[j].year, customers[j].email, customers[j].phone);
-            fclose(res);
         }
         j++;
     }
 
+    fclose(res);
     if (room_id)
     {
         changeRoomStat(room_id);
