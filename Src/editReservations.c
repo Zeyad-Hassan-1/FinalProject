@@ -54,7 +54,7 @@ void cancel()
     while (fgets(reservation, sizeof(reservation), res))
     {
 
-        sscanf(reservation, "%ld,%d,%[^,],%s,%s,%d,%d-%d-%d,%s,%s", &customers[i].reservationID, &customers[i].room_id, customers[i].status, customers[i].name, customers[i].nationalId, &customers[i].numberOfnights, &customers[i].day, &customers[i].month, &customers[i].year, customers[i].email, customers[i].phone);
+        sscanf(reservation, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customers[i].reservationID, &customers[i].room_id, customers[i].status, customers[i].name, customers[i].nationalId, &customers[i].numberOfnights, &customers[i].day, &customers[i].month, &customers[i].year, customers[i].email, customers[i].phone);
 
         if ((id == customers[i].reservationID || id == customers[i].room_id) && !strcmp(customers[i].status, "unconfirmed"))
         {
@@ -65,6 +65,7 @@ void cancel()
             room_id = customers[i].room_id;
             deletedLine = i;
         }
+        i++;
     }
 
     fclose(res);

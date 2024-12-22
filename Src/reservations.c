@@ -6,9 +6,7 @@
 #include "./headerFiles/reservations.h"
 #include "./headerFiles/validation.h"
 #include "./headerFiles/editReservations.h"
-/*
 
-*/
 long generateUniqueID()
 {
     time_t now = time(NULL);
@@ -19,68 +17,76 @@ void RoomReservation()
     Customer cst;
     printw("Enter number of nights: ");
     scanw("%d", &cst.numberOfnights);
+    attron(COLOR_PAIR(9));
+    while (!is_valid_nights(cst.numberOfnights))
+    {
+        printw("Please Enter A valid number of nights from 1 to 30 ...\n");
+        scanw("%d", &cst.numberOfnights);
+    }
+    attroff(COLOR_PAIR(9));
     printw("Enter day, month, year: ");
     scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
+    attron(COLOR_PAIR(9));
     while (!is_valid_date(cst.day, cst.month, cst.year))
     {
-        attron(COLOR_PAIR(1));
         printw("Please Enter A valid check-in date in form of dd mm yyyy\n");
-        attroff(COLOR_PAIR(1));
         scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
     }
+    attroff(COLOR_PAIR(9));
     printw("Enter name: ");
     getstr(cst.name);
     printw("Enter national ID: ");
     getstr(cst.nationalId);
+    attron(COLOR_PAIR(9));
     while (!is_valid_national_id(cst.nationalId))
     {
-        attron(COLOR_PAIR(1));
         printw("Please Enter A valid national ID....\n");
-        attroff(COLOR_PAIR(1));
         getstr(cst.nationalId);
     }
+    attroff(COLOR_PAIR(9));
     printw("Enter email: ");
     getstr(cst.email);
+    attron(COLOR_PAIR(9));
     while (!is_valid_email(cst.email))
     {
-        attron(COLOR_PAIR(1));
         printw("Please Enter valid email ex:student@gmail.com\n");
-        attroff(COLOR_PAIR(1));
         getstr(cst.email);
     }
+    attroff(COLOR_PAIR(9));
     printw("Enter phone: ");
     getstr(cst.phone);
+    attron(COLOR_PAIR(9));
     while (!is_valid_phone(cst.phone))
     {
-        attron(COLOR_PAIR(1));
-        printw("Please enter valid phone number containing 11 digits...\n");
-        attroff(COLOR_PAIR(1));
+        printw("Please enter valid phone number containing at least 5 digits...\n");
         getstr(cst.phone);
     }
-    
+    attroff(COLOR_PAIR(9));
     attron(COLOR_PAIR(3));
     printw("Select a category:");
     printw("1. SeaView\n2. GardenView\n3. LakeView\n");
     attroff(COLOR_PAIR(3));
     int categoryChoice;
-    scanw("%d", &categoryChoice);
-
-    switch (categoryChoice)
+    do
     {
-    case 1:
-        strcpy(cst.catogary, "SeaView");
-        break;
-    case 2:
-        strcpy(cst.catogary, "GardenView");
-        break;
-    case 3:
-        strcpy(cst.catogary, "LakeView");
-        break;
-    default:
-        printw("Invalid choice! Defaulting to Standard.\n");
-        strcpy(cst.catogary, "Standard");
-        break;
-    }
+        categoryChoice = getch() - '0';
+        switch (categoryChoice)
+        {
+        case 1:
+            strcpy(cst.catogary, "SeaView");
+            break;
+        case 2:
+            strcpy(cst.catogary, "GardenView");
+            break;
+        case 3:
+            strcpy(cst.catogary, "LakeView");
+            break;
+        default:
+            attron(COLOR_PAIR(9));
+            printw("Invalid choice! Please select a valid category.\n");
+            attroff(COLOR_PAIR(9));
+        }
+    } while (categoryChoice < 1 || categoryChoice > 3);
 
     FILE *fptr = fopen("output/Reservations.txt", "a");
     FILE *roomFile = fopen("output/Room.txt", "r");
@@ -93,7 +99,7 @@ void RoomReservation()
     char rooms[200];
     int found = 0;
 
-    while (fgets(rooms, sizeof(rooms), roomFile) && !found)
+    while (fgets(rooms, sizeof(rooms), roomFile))
     {
         int roomID, price;
         char status[20], category[20];
@@ -104,16 +110,73 @@ void RoomReservation()
         {
             cst.room_id = roomID;
             found = 1;
+            break;
         }
     }
     fclose(roomFile);
-    changeRoomStat(cst.room_id);
 
-    if (!found)
+    while (!found)
     {
-        printf("No available room found for the selected category.\n");
-        return;
+        attron(COLOR_PAIR(9));
+        printw("\nNo available room found for the selected category.\n");
+        printw("Press 'c' to cancel reservation or any other key to choose another category.\n");
+        attroff(COLOR_PAIR(9));
+        int choice = getch();
+        if (choice == 'c' || choice == 'C')
+        {
+            printw("Reservation cancelled.\n");
+            return;
+        }
+        else
+        {
+            attron(COLOR_PAIR(3));
+            printw("Select a category:\n1. SeaView\n2. GardenView\n3. LakeView\n");
+            attroff(COLOR_PAIR(3));
+            categoryChoice = getch() - '0';
+
+            switch (categoryChoice)
+            {
+            case 1:
+                strcpy(cst.catogary, "SeaView");
+                break;
+            case 2:
+                strcpy(cst.catogary, "GardenView");
+                break;
+            case 3:
+                strcpy(cst.catogary, "LakeView");
+                break;
+            default:
+                printw("Invalid choice! Defaulting to Standard.\n");
+                strcpy(cst.catogary, "Standard");
+                break;
+            }
+
+            roomFile = fopen("output/Room.txt", "r");
+            if (roomFile == NULL)
+            {
+                printf("Error: Could not open file.\n");
+                return;
+            }
+
+            while (fgets(rooms, sizeof(rooms), roomFile))
+            {
+                int roomID, price;
+                char status[20], category[20];
+
+                sscanf(rooms, "%d %s %s %d", &roomID, status, category, &price);
+
+                if (strcmp(status, "Available") == 0 && strcmp(category, cst.catogary) == 0)
+                {
+                    cst.room_id = roomID;
+                    found = 1;
+                    break;
+                }
+            }
+            fclose(roomFile);
+        }
     }
+
+    changeRoomStat(cst.room_id);
 
     char *roomStatue = "unconfirmed";
     long reservationID = generateUniqueID();
@@ -156,7 +219,7 @@ int validateCheckIn()
 
     fptr1 = fopen("output/Reservations.txt", "w");
     int j = 0;
-    while(j < i)
+    while (j < i)
     {
         fprintf(fptr1, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", customers[j].reservationID, customers[j].room_id, customers[j].status, customers[j].name, customers[j].nationalId, customers[j].numberOfnights, customers[j].day, customers[j].month, customers[j].year, customers[j].email, customers[j].phone);
         j++;

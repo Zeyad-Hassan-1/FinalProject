@@ -9,4 +9,5 @@ int is_valid_phone(const char *phone);
 
 int is_valid_national_id(const char *national_id);
 
+int is_valid_nights(int nights);
 #endif 

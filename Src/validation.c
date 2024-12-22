@@ -45,12 +45,12 @@ int is_valid_date(int day, int month, int year)
 
 int is_valid_phone(const char *phone)
 {
-    if (strlen(phone) != 11)
+    if (strlen(phone) < 5)
     {
         return 0;
     }
 
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < strlen(phone); i++)
     {
         if (!isdigit(phone[i]))
         {
@@ -69,6 +69,16 @@ int is_valid_national_id(const char *national_id)
         {
             return 0;
         }
+    }
+
+    return 1;
+}
+
+int is_valid_nights(int nights)
+{
+    if (nights < 1 || nights > 30)
+    {
+        return 0;
     }
 
     return 1;
