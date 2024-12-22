@@ -206,7 +206,7 @@ void secondaryMenu()
             switch (choice)
             {
             case 1:
-                RoomReservation(0);
+                RoomReservation();
                 attron(COLOR_PAIR(4));
                 printw("Reservation saved!\n");
                 attroff(COLOR_PAIR(4));

@@ -2,8 +2,7 @@
 #define EDITRESERVATIONS_H
 
 Customer ViewCustomerDetails();
-int cancel();
+void cancel();
 void changeRoomStat(int roomId);
-int Quit();
 
 #endif

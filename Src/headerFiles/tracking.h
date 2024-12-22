@@ -30,9 +30,9 @@
 
 typedef struct
 {
-    int national_ID;
+    char national_ID[20];
     char email[100];
-    int mobile_number;
+    char mobile_number[20];
 
 } information;
 

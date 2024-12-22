@@ -6,14 +6,15 @@
 #include "./headerFiles/reservations.h"
 #include "./headerFiles/validation.h"
 #include "./headerFiles/editReservations.h"
+/*
 
+*/
 long generateUniqueID()
 {
     time_t now = time(NULL);
     return now % 100000000;
 }
-
-void RoomReservation(int statue)
+void RoomReservation()
 {
     Customer cst;
     printw("Enter number of nights: ");
@@ -23,7 +24,7 @@ void RoomReservation(int statue)
     while (!is_valid_date(cst.day, cst.month, cst.year))
     {
         attron(COLOR_PAIR(1));
-        printw("Please Enter A vaild check in date in form of dd mm yyyy\n");
+        printw("Please Enter A valid check-in date in form of dd mm yyyy\n");
         attroff(COLOR_PAIR(1));
         scanw("%d %d %d", &cst.day, &cst.month, &cst.year);
     }
@@ -34,7 +35,7 @@ void RoomReservation(int statue)
     while (!is_valid_national_id(cst.nationalId))
     {
         attron(COLOR_PAIR(1));
-        printw("Please Enter A vaild national id....\n");
+        printw("Please Enter A valid national ID....\n");
         attroff(COLOR_PAIR(1));
         getstr(cst.nationalId);
     }
@@ -43,7 +44,7 @@ void RoomReservation(int statue)
     while (!is_valid_email(cst.email))
     {
         attron(COLOR_PAIR(1));
-        printw("Please Enter valid email ex:student@gmail.com");
+        printw("Please Enter valid email ex:student@gmail.com\n");
         attroff(COLOR_PAIR(1));
         getstr(cst.email);
     }
@@ -52,7 +53,7 @@ void RoomReservation(int statue)
     while (!is_valid_phone(cst.phone))
     {
         attron(COLOR_PAIR(1));
-        printw("Please enter valid phone number containing 11 digit...\n");
+        printw("Please enter valid phone number containing 11 digits...\n");
         attroff(COLOR_PAIR(1));
         getstr(cst.phone);
     }
@@ -114,9 +115,9 @@ void RoomReservation(int statue)
         return;
     }
 
-    char *roomStatue = statue ? "confirmed" : "unconfirmed";
+    char *roomStatue = "unconfirmed";
     long reservationID = generateUniqueID();
-    fprintf(fptr, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n", reservationID, cst.room_id, roomStatue, cst.name, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.nationalId, cst.phone);
+    fprintf(fptr, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", reservationID, cst.room_id, roomStatue, cst.name, cst.nationalId, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.phone);
     fclose(fptr);
 }
 
@@ -130,40 +131,39 @@ int validateCheckIn()
     scanw("%d %d %d", &d, &m, &y);
     char line1[200];
     FILE *fptr1 = fopen("output/Reservations.txt", "r");
-    FILE *tempFile = fopen("output/Tempr.txt", "w");
-    if (fptr1 == NULL || tempFile == NULL)
+    if (fptr1 == NULL)
     {
         printf("Error: Could not open Reservation.txt\n");
-        fclose(fptr1);
-        fclose(tempFile);
         return 0;
     }
 
-    int room, found = 0;
+    int room, found = 0, i = 0;
+    Customer customers[200];
     while (fgets(line1, sizeof(line1), fptr1))
     {
-        long reservationID;
-        char stat[20], name[50], email[50], nID[20], phone[20];
-        int day, month, year, numofNights;
+        sscanf(line1, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customers[i].reservationID, &customers[i].room_id, customers[i].status, customers[i].name, customers[i].nationalId, &customers[i].numberOfnights, &customers[i].day, &customers[i].month, &customers[i].year, customers[i].email, customers[i].phone);
 
-        sscanf(line1, "%ld,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%[^,],%s", &reservationID, &room, stat, name, &numofNights, &day, &month, &year, email, nID, phone);
-
-        if (res_ID == reservationID && d == day && m == month && y == year)
+        if (res_ID == customers[i].reservationID && d == customers[i].day && m == customers[i].month && y == customers[i].year)
         {
-            strcpy(stat, "confirmed");
+            strcpy(customers[i].status, "confirmed");
             found = 1;
         }
 
-        fprintf(tempFile, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n", reservationID, room, stat, name, numofNights, day, month, year, email, nID, phone);
+        i++;
     }
 
     fclose(fptr1);
-    fclose(tempFile);
 
-    remove("output/Reservations.txt");
-    rename("output/Tempr.txt", "output/Reservations.txt");
+    fptr1 = fopen("output/Reservations.txt", "w");
+    int j = 0;
+    while(j < i)
+    {
+        fprintf(fptr1, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", customers[j].reservationID, customers[j].room_id, customers[j].status, customers[j].name, customers[j].nationalId, customers[j].numberOfnights, customers[j].day, customers[j].month, customers[j].year, customers[j].email, customers[j].phone);
+        j++;
+    }
+    fclose(fptr1);
 
-    if(room)
-        return room;
+    if (found)
+        return customers[0].room_id;
     return 0;
 }

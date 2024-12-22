@@ -14,9 +14,14 @@ typedef struct {
     char nationalId[20];
 } Customer;
 
+typedef struct {
+    int room_id;
+    char status[20];
+    char category[20];
+    int price;
+} Room;
 
-void RoomReservation(int statue);
-void check_in(int room_id);
+void RoomReservation();
 int validateCheckIn();
 
 

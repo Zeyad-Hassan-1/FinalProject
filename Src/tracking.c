@@ -78,7 +78,7 @@ void find_by_name(char *name)
             break;
         }
 
-        sscanf(line, "%d,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%d,%d", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.national_ID, &customer.Contact_information.mobile_number);
+        sscanf(line, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, &customer.Contact_information.national_ID, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.mobile_number);
 
         if (strcmp(name, customer.name) == 0)
         {
@@ -90,8 +90,8 @@ void find_by_name(char *name)
             mvwprintw(win, 6, (width - 18) / 2, "Number of Nights: %d", customer.Number_of_nights);
             mvwprintw(win, 7, (width - 20) / 2, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
             mvwprintw(win, 8, (width - strlen(customer.Contact_information.email) - 8) / 2, "Email: %s", customer.Contact_information.email);
-            mvwprintw(win, 9, (width - 13) / 2, "National ID: %d", customer.Contact_information.national_ID);
-            mvwprintw(win, 10, (width - 8) / 2, "Mobile: %d", customer.Contact_information.mobile_number);
+            mvwprintw(win, 9, (width - 13) / 2, "National ID: %s", customer.Contact_information.national_ID);
+            mvwprintw(win, 10, (width - 8) / 2, "Mobile: %s", customer.Contact_information.mobile_number);
             wattroff(win, COLOR_PAIR(2));
             break;
         }
@@ -168,7 +168,7 @@ int find_by_roomID(int rid)
                     {
                         break;
                     }
-                    sscanf(linec, "%d,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%d,%d", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.national_ID, &customer.Contact_information.mobile_number);
+                    sscanf(linec, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, &customer.Contact_information.national_ID, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, &customer.Contact_information.mobile_number);
 
                     if (rid == customer.room_information.room_ID)
                     {
@@ -179,8 +179,8 @@ int find_by_roomID(int rid)
                         mvwprintw(win, 10, (width - strlen("Number of Nights:") - 17) / 2, "Number of Nights: %d", customer.Number_of_nights);
                         mvwprintw(win, 11, (width - strlen("Check-in Date:") - 15) / 2, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
                         mvwprintw(win, 12, (width - strlen("Email:") - 7) / 2, "Email: %s", customer.Contact_information.email);
-                        mvwprintw(win, 13, (width - strlen("National ID:") - 13) / 2, "National ID: %d", customer.Contact_information.national_ID);
-                        mvwprintw(win, 14, (width - strlen("Mobile:") - 7) / 2, "Mobile: %d", customer.Contact_information.mobile_number);
+                        mvwprintw(win, 13, (width - strlen("National ID:") - 13) / 2, "National ID: %s", customer.Contact_information.national_ID);
+                        mvwprintw(win, 14, (width - strlen("Mobile:") - 7) / 2, "Mobile: %s", customer.Contact_information.mobile_number);
                         wattroff(win, COLOR_PAIR(2));
                         break;
                     }

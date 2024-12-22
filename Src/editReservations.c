@@ -18,7 +18,7 @@ Customer ViewCustomerDetails()
     while (fgets(line, 200, file))
     {
         Customer csv;
-        sscanf(line, "%ld,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%[^,],%s", &csv.reservationID, &csv.room_id, csv.status, csv.name, &csv.numberOfnights, &csv.day, &csv.month, &csv.year, csv.email, csv.nationalId, csv.phone);
+        sscanf(line, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &csv.reservationID, &csv.room_id, csv.status, csv.name, csv.nationalId, &csv.numberOfnights, &csv.day, &csv.month, &csv.year, csv.email, csv.phone);
         if (id == csv.reservationID || id == csv.room_id)
         {
             attron(COLOR_PAIR(2));
@@ -32,25 +32,14 @@ Customer ViewCustomerDetails()
     fclose(file);
 }
 
-int Quit()
-{
-    return 0;
-}
-
-int cancel()
+void cancel()
 {
     long id;
     int room_id = 0, found = 0;
     FILE *res = fopen("output/Reservations.txt", "r");
-    if (!res) {
+    if (!res)
+    {
         perror("Error opening Reservations.txt");
-        exit(EXIT_FAILURE);
-    }
-
-    FILE *temp = fopen("output/tmp.txt", "w");
-    if (!temp) {
-        perror("Error opening tmp.txt");
-        fclose(res);
         exit(EXIT_FAILURE);
     }
 
@@ -59,89 +48,81 @@ int cancel()
     scanw("%ld", &id);
 
     char reservation[200];
+    Customer customers[200];
+    int i = 0, deletedLine;
     while (fgets(reservation, sizeof(reservation), res))
     {
-        Customer cust;
 
-        sscanf(reservation, "%ld,%d,%[^,],%[^,],%d,%d-%d-%d,%[^,],%[^,],%s", 
-               &cust.reservationID, &cust.room_id, cust.status, cust.name, &cust.numberOfnights, 
-               &cust.day, &cust.month, &cust.year, cust.email, cust.nationalId, cust.phone);
+        sscanf(reservation, "%ld,%d,%[^,],%s,%s,%d,%d-%d-%d,%s,%s", &customers[i].reservationID, &customers[i].room_id, customers[i].status, customers[i].name, customers[i].nationalId, &customers[i].numberOfnights, &customers[i].day, &customers[i].month, &customers[i].year, customers[i].email, customers[i].phone);
 
-        if ((id == cust.reservationID || id == cust.room_id) && !strcmp(cust.status, "unconfirmed"))
+        if ((id == customers[i].reservationID || id == customers[i].room_id) && !strcmp(customers[i].status, "unconfirmed"))
         {
             found = 1;
             clear();
             printw("Reservation cancelled successfully\n");
             refresh();
-            room_id = cust.room_id;
-            continue;
+            room_id = customers[i].room_id;
+            deletedLine = i;
         }
-
-        fprintf(temp, "%ld,%d,%s,%s,%d,%02d-%02d-%02d,%s,%s,%s\n",
-                cust.reservationID, cust.room_id, cust.status, cust.name, cust.numberOfnights, 
-                cust.day, cust.month, cust.year, cust.email, cust.nationalId, cust.phone);
     }
 
     fclose(res);
-    fclose(temp);
 
-    if (!found) {
-        clear();
-        printw("ReservationId or RoomId NOT FOUND!!!!\n");
-        refresh();
-        remove("output/tmp.txt"); // إزالة الملف المؤقت في حالة عدم وجود حجز
-        return 0;
+    res = fopen("output/Reservations.txt", "w");
+    int j = 0;
+    while (j < i)
+    {
+        if (j != deletedLine)
+        {
+            fprintf(res, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", customers[j].reservationID, customers[j].room_id, customers[j].status, customers[j].name, customers[j].nationalId, customers[j].numberOfnights, customers[j].day, customers[j].month, customers[j].year, customers[j].email, customers[j].phone);
+            fclose(res);
+        }
+        j++;
     }
 
-    // حذف الملف الأصلي
-    if (remove("output/Reservations.txt") != 0) {
-        perror("Error deleting Reservations.txt");
-        exit(EXIT_FAILURE);
-    }
-
-    // إعادة تسمية الملف المؤقت
-    if (rename("output/tmp.txt", "output/Reservations.txt") != 0) {
-        perror("Error renaming tmp.txt");
-        exit(EXIT_FAILURE);
-    }
-
-    // تغيير حالة الغرفة إذا تم تحديدها
-    if (room_id) {
+    if (room_id)
+    {
         changeRoomStat(room_id);
     }
-
-    return room_id;
 }
-
 
 void changeRoomStat(int roomId)
 {
     FILE *roomFile = fopen("output/Room.txt", "r");
-    FILE *tempFile = fopen("output/tmproom.txt", "w");
-    if (!roomFile || !tempFile)
+    if (!roomFile)
     {
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
 
     char line[200];
+    Room rooms[200];
+    int i = 0;
     while (fgets(line, 200, roomFile))
     {
-        int room_id, price;
-        char stat[20], category[20];
-        sscanf(line, "%d %s %s %d", &room_id, stat, category, &price);
-        if (room_id == roomId)
+
+        sscanf(line, "%d %s %s %d", &rooms[i].room_id, rooms[i].status, rooms[i].category, &rooms[i].price);
+        if (rooms[i].room_id == roomId)
         {
-            if (!strcmp(stat, "Reserved"))
-                strcpy(stat, "Available");
+            if (!strcmp(rooms[i].status, "Reserved"))
+                strcpy(rooms[i].status, "Available");
             else
-                strcpy(stat, "Reserved");
+                strcpy(rooms[i].status, "Reserved");
         }
-        fprintf(tempFile, "%d %s %s %d\n", room_id, stat, category, price);
+        i++;
     }
     fclose(roomFile);
-    fclose(tempFile);
-
-    remove("output/Room.txt");
-    rename("output/tmproom.txt", "output/Room.txt");
+    roomFile = fopen("output/Room.txt", "w");
+    if (!roomFile)
+    {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+    int j = 0;
+    while (j < i)
+    {
+        fprintf(roomFile, "%d %s %s %d\n", rooms[j].room_id, rooms[j].status, rooms[j].category, rooms[j].price);
+        j++;
+    }
+    fclose(roomFile);
 }
