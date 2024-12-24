@@ -22,7 +22,7 @@ typedef struct {
     int price;
 } Room;
 
-int RoomReservation(int stat);
+int RoomReservation(int stat, long resID, char *nId);
 int validateCheckIn();
 
 

@@ -14,7 +14,7 @@ long generateUniqueID()
     return now % 100000000;
 }
 
-int RoomReservation(int stat)
+int RoomReservation(int stat, long resID, char *nId)
 {
     Customer cst;
     printw("Enter number of nights: ");
@@ -37,15 +37,20 @@ int RoomReservation(int stat)
     attroff(COLOR_PAIR(9));
     printw("Enter name: ");
     getstr(cst.name);
-    printw("Enter national ID: ");
-    getstr(cst.nationalId);
-    attron(COLOR_PAIR(9));
-    while (!is_valid_national_id(cst.nationalId))
+    if(nId != NULL)
+        strcpy(cst.nationalId, nId);
+    else
     {
-        printw("Please Enter A valid national ID....\n");
+        printw("Enter national ID: ");
         getstr(cst.nationalId);
+        attron(COLOR_PAIR(9));
+        while (!is_valid_national_id(cst.nationalId))
+        {
+            printw("Please Enter A valid national ID....\n");
+            getstr(cst.nationalId);
+        }
+        attroff(COLOR_PAIR(9));
     }
-    attroff(COLOR_PAIR(9));
     printw("Enter email: ");
     getstr(cst.email);
     attron(COLOR_PAIR(9));
@@ -179,14 +184,17 @@ int RoomReservation(int stat)
     }
 
     changeRoomStat(cst.room_id);
-    char *roomStatue;
     if(stat)
-         roomStatue = "confirmed";
+         strcpy(cst.status, "confirmed");
     else
-        roomStatue = "unconfirmed";
+        strcpy(cst.status, "unconfirmed");
 
-    long reservationID = generateUniqueID();
-    fprintf(fptr, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", reservationID, cst.room_id, roomStatue, cst.name, cst.nationalId, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.phone);
+    if(resID != 0)
+        cst.reservationID = resID;
+    else
+        cst.reservationID = generateUniqueID();
+
+    fprintf(fptr, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", cst.reservationID, cst.room_id, cst.status, cst.name, cst.nationalId, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.phone);
     fclose(fptr);
     sort();
     return cst.room_id;

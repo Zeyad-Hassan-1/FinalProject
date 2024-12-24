@@ -1,5 +1,2 @@
-35001876,1002,unconfirmed,ZeyadHasan,555552,5,01-01-2024,Zeyad@gmail.com,01094933404
-35001951,1124,unconfirmed,Zeeezo,5625,2,01-01-2025,Zeeeezo@gmail.cooom,021520
-35001391,1130,unconfirmed,Zeeezo,56256,5,02-01-2025,Zeeezo@gmail.com,010252
-35000940,1001,unconfirmed,ZeyadHasan,56256,5,02-03-2025,Zeyad@gmail.com,01094933404
-35001424,1133,unconfirmed,hjkjl,54312563,5,02-05-2025,scdshg@jkm.cjik,0215210
+35050301,1001,unconfirmed,ZeozoHasan,556556,20,29-12-2024,ZezoHasan@gmail.com,01094933404
+35050339,1133,confirmed,Ahmed,55565699,7,29-12-2024,Ahmed@gmail.com,525962365

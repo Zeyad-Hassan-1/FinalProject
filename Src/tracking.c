@@ -318,3 +318,84 @@ void query()
     delwin(win);
     endwin(); // End curses mode
 }
+
+void check_the_date()
+{
+    initscr();
+    customer_information customer;
+
+    FILE *f;
+    f = fopen("output/Reservations.txt", "r");
+    if (f == NULL)
+    {
+        printf("error opening file\n\n");
+        exit(1);
+    }
+    int day, month, year;
+    // Refresh the main screen
+    int width = COLS - 4;
+    int height = LINES - 4;
+    int startx = 2;
+    int starty = 2;
+
+    // Draw border using box
+    WINDOW *win = newwin(height, width, starty, startx);
+    box(win, 0, 0);
+    clear();
+    refresh();
+    mvwprintw(win, 0, (width - 41) / 2, "check the date for registration customer");
+    mvwprintw(win, 3, 2, "day: ");
+    wscanw(win, "%d", &day);
+    mvwprintw(win, 4, 2, "month: ");
+    wscanw(win, "%d", &month);
+    mvwprintw(win, 5, 2, "year: ");
+    wscanw(win, "%d", &year);
+    wrefresh(win);
+    char line[1000];
+    wclear(win);
+    box(win, 0, 0);
+    wrefresh(win);
+    int found = 0;
+    int col = 1;
+    while (fgets(line, 1000, f))
+    {
+        sscanf(line, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, customer.Contact_information.national_ID, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, customer.Contact_information.mobile_number);
+
+        if (customer.Check_in_date.day == day && customer.Check_in_date.month == month && customer.Check_in_date.year == year)
+        {
+            found = 1;
+            wattron(win, COLOR_PAIR(4));
+            mvwprintw(win, col++, (width - 6 - strlen(customer.name)) / 2, "Name: %s", customer.name);
+            mvwprintw(win, col++, (width - 24) / 2, "Reservation ID: %ld", customer.reservation_ID);
+            mvwprintw(win, col++, (width - 13) / 2, "Room ID: %d", customer.room_information.room_ID);
+            mvwprintw(win, col++, (width - 20 - strlen(customer.reservation_state)) / 2, "Reservation Status: %s", customer.reservation_state);
+            mvwprintw(win, col++, (width - 20) / 2, "Number of Nights: %d", customer.Number_of_nights);
+            mvwprintw(win, col++, (width - 24) / 2, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
+            mvwprintw(win, col++, (width - 7 - strlen(customer.Contact_information.email)) / 2, "Email: %s", customer.Contact_information.email);
+            mvwprintw(win, col++, (width - 13 - strlen(customer.Contact_information.national_ID)) / 2, "National ID: %s", customer.Contact_information.national_ID);
+            mvwprintw(win, col++, (width - 8 - strlen(customer.Contact_information.mobile_number)) / 2, "Mobile: %s", customer.Contact_information.mobile_number);
+            wattroff(win, COLOR_PAIR(4));
+            wattron(win, COLOR_PAIR(2));
+            for (int i = 1; i < width-1; i++)
+            {
+                mvwprintw(win, col, i, "-");
+            }
+            col++;
+            
+            wattroff(win, COLOR_PAIR(2));
+            wrefresh(win);
+        }
+    }
+    if(!found)
+    {
+        wattron(win, COLOR_PAIR(9));
+        mvwprintw(win, 1, (width - 6 - strlen("Not Found")) / 2, "Not Found");
+        wrefresh(win);
+        wattroff(win, COLOR_PAIR(9));
+    }
+    fclose(f);
+
+    refresh();
+    delwin(win);
+    endwin();
+}

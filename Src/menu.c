@@ -207,7 +207,7 @@ void secondaryMenu()
             switch (choice)
             {
             case 1:
-                RoomReservation(0);
+                RoomReservation(0, 0 ,NULL);
                 attron(COLOR_PAIR(4));
                 printw("Reservation saved!\n");
                 attroff(COLOR_PAIR(4));
@@ -237,7 +237,7 @@ void secondaryMenu()
                 long id;
                 printw("Enter reservation_id or Room_id...\n");
                 refresh();
-                scanw("%ld",id);
+                scanw("%ld",&id);
                 cancel(id,0);
                 break;
 
@@ -268,6 +268,7 @@ void secondaryMenu()
 
             case 9:
                 printw("Reservation Report Selected...\n");
+                check_the_date();
                 break;
 
             case 10:
