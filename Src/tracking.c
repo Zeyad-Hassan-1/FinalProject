@@ -319,6 +319,7 @@ void query()
     endwin(); // End curses mode
 }
 
+
 void check_the_date()
 {
     initscr();
@@ -343,7 +344,7 @@ void check_the_date()
     box(win, 0, 0);
     clear();
     refresh();
-    mvwprintw(win, 0, (width - 41) / 2, "check the date for registration customer");
+    mvwprintw(win, 0, (width - 41) / 2, "Check the date for customer registration");
     mvwprintw(win, 3, 2, "day: ");
     wscanw(win, "%d", &day);
     mvwprintw(win, 4, 2, "month: ");
@@ -355,46 +356,108 @@ void check_the_date()
     wclear(win);
     box(win, 0, 0);
     wrefresh(win);
+
     int found = 0;
     int col = 1;
+    customer_information customers[100]; // Array to store customer data
+    int customer_count = 0;
+
+    // Read data from the file and store it in the customers array
     while (fgets(line, 1000, f))
     {
         sscanf(line, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customer.reservation_ID, &customer.room_information.room_ID, customer.reservation_state, customer.name, customer.Contact_information.national_ID, &customer.Number_of_nights, &customer.Check_in_date.day, &customer.Check_in_date.month, &customer.Check_in_date.year, customer.Contact_information.email, customer.Contact_information.mobile_number);
 
         if (customer.Check_in_date.day == day && customer.Check_in_date.month == month && customer.Check_in_date.year == year)
         {
-            found = 1;
-            wattron(win, COLOR_PAIR(4));
-            mvwprintw(win, col++, (width - 6 - strlen(customer.name)) / 2, "Name: %s", customer.name);
-            mvwprintw(win, col++, (width - 24) / 2, "Reservation ID: %ld", customer.reservation_ID);
-            mvwprintw(win, col++, (width - 13) / 2, "Room ID: %d", customer.room_information.room_ID);
-            mvwprintw(win, col++, (width - 20 - strlen(customer.reservation_state)) / 2, "Reservation Status: %s", customer.reservation_state);
-            mvwprintw(win, col++, (width - 20) / 2, "Number of Nights: %d", customer.Number_of_nights);
-            mvwprintw(win, col++, (width - 24) / 2, "Check-in Date: %d-%d-%d", customer.Check_in_date.day, customer.Check_in_date.month, customer.Check_in_date.year);
-            mvwprintw(win, col++, (width - 7 - strlen(customer.Contact_information.email)) / 2, "Email: %s", customer.Contact_information.email);
-            mvwprintw(win, col++, (width - 13 - strlen(customer.Contact_information.national_ID)) / 2, "National ID: %s", customer.Contact_information.national_ID);
-            mvwprintw(win, col++, (width - 8 - strlen(customer.Contact_information.mobile_number)) / 2, "Mobile: %s", customer.Contact_information.mobile_number);
-            wattroff(win, COLOR_PAIR(4));
-            wattron(win, COLOR_PAIR(2));
-            for (int i = 1; i < width-1; i++)
-            {
-                mvwprintw(win, col, i, "-");
-            }
-            col++;
-            
-            wattroff(win, COLOR_PAIR(2));
-            wrefresh(win);
+            customers[customer_count++] = customer; // Add customer to array
         }
     }
-    if(!found)
+
+    if (customer_count == 0)
     {
         wattron(win, COLOR_PAIR(9));
         mvwprintw(win, 1, (width - 6 - strlen("Not Found")) / 2, "Not Found");
         wrefresh(win);
         wattroff(win, COLOR_PAIR(9));
     }
-    fclose(f);
+    else
+    {
+        int current_page = 0; // Start from the first page
+        int total_pages = (customer_count + 1) / 2; // 2 customers per page (round up)
+        int line_num = 2; // Start at line 2 to leave space for the header
 
+        while (1)
+        {
+            wclear(win);
+            box(win, 0, 0);
+            mvwprintw(win, 0, (width - 41) / 2, "Check the date for customer registration");
+
+            // Display customers for the current page
+            for (int i = current_page * 2; i < (current_page + 1) * 2 && i < customer_count; i++)
+            {
+                col = 1;
+
+                // Print each customer in a separate line
+                wattron(win, COLOR_PAIR(4));
+                mvwprintw(win, line_num++, (width - 6 - strlen(customers[i].name)) / 2, "Name: %s", customers[i].name);
+                mvwprintw(win, line_num++, (width - 24) / 2, "Reservation ID: %ld", customers[i].reservation_ID);
+                mvwprintw(win, line_num++, (width - 13) / 2, "Room ID: %d", customers[i].room_information.room_ID);
+                mvwprintw(win, line_num++, (width - 20 - strlen(customers[i].reservation_state)) / 2, "Reservation Status: %s", customers[i].reservation_state);
+                mvwprintw(win, line_num++, (width - 20) / 2, "Number of Nights: %d", customers[i].Number_of_nights);
+                mvwprintw(win, line_num++, (width - 24) / 2, "Check-in Date: %d-%d-%d", customers[i].Check_in_date.day, customers[i].Check_in_date.month, customers[i].Check_in_date.year);
+                mvwprintw(win, line_num++, (width - 7 - strlen(customers[i].Contact_information.email)) / 2, "Email: %s", customers[i].Contact_information.email);
+                mvwprintw(win, line_num++, (width - 13 - strlen(customers[i].Contact_information.national_ID)) / 2, "National ID: %s", customers[i].Contact_information.national_ID);
+                mvwprintw(win, line_num++, (width - 8 - strlen(customers[i].Contact_information.mobile_number)) / 2, "Mobile: %s", customers[i].Contact_information.mobile_number);
+                wattroff(win, COLOR_PAIR(4));
+                wattron(win, COLOR_PAIR(2));
+                for (int j = 1; j < width - 1; j++)
+                {
+                    mvwprintw(win, line_num, j, "-");
+                }
+                line_num++;
+                wattroff(win, COLOR_PAIR(2));
+            }
+
+            // Display navigation message
+            mvwprintw(win, height - 3, (width - 50) / 2, "Press 'n' for next, 'p' for previous, 'Enter' to exit");
+
+            wrefresh(win);
+            int ch = getch();
+
+            if (ch == 'n') // Next page
+            {
+                if (current_page == total_pages - 1) // If we're at the last page, go to the first page
+                {
+                    current_page = 0;
+                }
+                else
+                {
+                    current_page++; // Go to the next page
+                }
+                line_num = 2; // Reset line number for the next page
+            }
+            else if (ch == 'p') // Previous page
+            {
+                if (current_page == 0) // If we're at the first page, go to the last page
+                {
+                    current_page = total_pages - 1;
+                }
+                else
+                {
+                    current_page--; // Go to the previous page
+                }
+                line_num = 2; // Reset line number for the previous page
+            }
+            else if (ch == '\n') // Exit on Enter
+            {
+                clear();
+                refresh();
+                break; // Exit the loop when Enter is pressed
+            }
+        }
+    }
+
+    fclose(f);
     refresh();
     delwin(win);
     endwin();

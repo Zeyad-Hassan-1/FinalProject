@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <curses.h>
+#include <signal.h>
 #include "./headerFiles/login.h"
 #include "./headerFiles/reservations.h"
 #include "./headerFiles/editReservations.h"
