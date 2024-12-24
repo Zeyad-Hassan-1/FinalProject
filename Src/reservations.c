@@ -12,7 +12,8 @@ long generateUniqueID()
     time_t now = time(NULL);
     return now % 100000000;
 }
-void RoomReservation()
+
+int RoomReservation(int stat)
 {
     Customer cst;
     printw("Enter number of nights: ");
@@ -93,7 +94,7 @@ void RoomReservation()
     if (roomFile == NULL)
     {
         printf("Error: Could not open file.\n");
-        return;
+        exit(0);
     }
 
     char rooms[200];
@@ -125,7 +126,7 @@ void RoomReservation()
         if (choice == 'c' || choice == 'C')
         {
             printw("Reservation cancelled.\n");
-            return;
+            exit(1);
         }
         else
         {
@@ -155,7 +156,7 @@ void RoomReservation()
             if (roomFile == NULL)
             {
                 printf("Error: Could not open file.\n");
-                return;
+                exit(0);
             }
 
             while (fgets(rooms, sizeof(rooms), roomFile))
@@ -177,11 +178,16 @@ void RoomReservation()
     }
 
     changeRoomStat(cst.room_id);
+    char *roomStatue;
+    if(stat)
+         roomStatue = "confirmed";
+    else
+        roomStatue = "unconfirmed";
 
-    char *roomStatue = "unconfirmed";
     long reservationID = generateUniqueID();
     fprintf(fptr, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", reservationID, cst.room_id, roomStatue, cst.name, cst.nationalId, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.phone);
     fclose(fptr);
+    return cst.room_id;
 }
 
 int validateCheckIn()

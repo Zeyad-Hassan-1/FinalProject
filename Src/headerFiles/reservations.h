@@ -21,7 +21,7 @@ typedef struct {
     int price;
 } Room;
 
-void RoomReservation();
+int RoomReservation(int stat);
 int validateCheckIn();
 
 

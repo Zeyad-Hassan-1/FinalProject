@@ -7,6 +7,7 @@
 #include "./headerFiles/editReservations.h"
 #include "./headerFiles/menu.h"
 #include "./headerFiles/tracking.h"
+#include "./headerFiles/checkOut.h"
 
 int isLoggedIn = 0;
 
@@ -206,7 +207,7 @@ void secondaryMenu()
             switch (choice)
             {
             case 1:
-                RoomReservation();
+                RoomReservation(0);
                 attron(COLOR_PAIR(4));
                 printw("Reservation saved!\n");
                 attroff(COLOR_PAIR(4));
@@ -233,11 +234,16 @@ void secondaryMenu()
 
             case 3:
                 printw("Cancel Reservation Selected...\n");
-                cancel();
+                long id;
+                printw("Enter reservation_id or Room_id...\n");
+                refresh();
+                scanw("%ld",id);
+                cancel(id,0);
                 break;
 
             case 4:
                 printw("Check-Out Selected...\n");
+                checkOut();
                 break;
 
             case 5:
@@ -252,6 +258,7 @@ void secondaryMenu()
 
             case 7:
                 printw("Edit Reservation Selected...\n");
+                edit();
                 break;
 
             case 8:

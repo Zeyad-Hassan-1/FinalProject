@@ -32,9 +32,8 @@ Customer ViewCustomerDetails()
     fclose(file);
 }
 
-void cancel()
+void cancel(long id, int edit)
 {
-    long id;
     int room_id = 0, found = 0;
     int deletedLine;
     FILE *res = fopen("output/Reservations.txt", "r");
@@ -44,10 +43,6 @@ void cancel()
         exit(EXIT_FAILURE);
     }
 
-    printw("Enter reservation_id or Room_id...\n");
-    refresh();
-    scanw("%ld", &id);
-
     char reservation[200];
     Customer customers[200];
     int i = 0;
@@ -56,14 +51,20 @@ void cancel()
 
         sscanf(reservation, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &customers[i].reservationID, &customers[i].room_id, customers[i].status, customers[i].name, customers[i].nationalId, &customers[i].numberOfnights, &customers[i].day, &customers[i].month, &customers[i].year, customers[i].email, customers[i].phone);
 
-        if ((id == customers[i].reservationID || id == customers[i].room_id) && !strcmp(customers[i].status, "unconfirmed"))
+        if ((id == customers[i].reservationID || id == customers[i].room_id))
         {
-            found = 1;
-            clear();
-            printw("Reservation cancelled successfully\n");
-            refresh();
-            room_id = customers[i].room_id;
-            deletedLine = i;
+            if (!strcmp(customers[i].status, "unconfirmed") || edit == 1)
+            {
+                found = 1;
+                clear();
+                if (!edit)
+                {
+                    printw("Reservation cancelled successfully\n");
+                    refresh();
+                }
+                room_id = customers[i].room_id;
+                deletedLine = i;
+            }
         }
         i++;
     }
@@ -88,7 +89,7 @@ void cancel()
     }
 }
 
-void changeRoomStat(int roomId)
+int changeRoomStat(int roomId)
 {
     FILE *roomFile = fopen("output/Room.txt", "r");
     if (!roomFile)
@@ -99,13 +100,14 @@ void changeRoomStat(int roomId)
 
     char line[200];
     Room rooms[200];
-    int i = 0;
+    int i = 0, found = 0;
     while (fgets(line, 200, roomFile))
     {
 
         sscanf(line, "%d %s %s %d", &rooms[i].room_id, rooms[i].status, rooms[i].category, &rooms[i].price);
         if (rooms[i].room_id == roomId)
         {
+            found = 1;
             if (!strcmp(rooms[i].status, "Reserved"))
                 strcpy(rooms[i].status, "Available");
             else
@@ -120,6 +122,13 @@ void changeRoomStat(int roomId)
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
+    if (!found)
+    {
+        attron(COLOR_PAIR(9));
+        printw("Error room not found..\n");
+        attroff(COLOR_PAIR(9));
+    }
+
     int j = 0;
     while (j < i)
     {
@@ -127,4 +136,57 @@ void changeRoomStat(int roomId)
         j++;
     }
     fclose(roomFile);
+    return found;
+}
+
+int save()
+{
+    printw("Do you want to save the edits? press c to cancel or any key to save.....\n");
+    int choose = getch();
+    switch (choose)
+    {
+    case 'c':
+        return 0;
+        break;
+
+    default:
+        return 1;
+        break;
+    }
+}
+
+void edit()
+{
+    long id;
+    FILE *res = fopen("output/Reservations.c", "r");
+    printw("Please enter reservation id or room id...\n");
+    scanw("%ld", &id);
+    char line[200];
+    Customer cust;
+    int stat;
+    while (fgets(line, 200, res))
+    {
+        sscanf(line, "%ld,%d,%[^,],%[^,],%[^,],%d,%d-%d-%d,%[^,],%s", &cust.reservationID, &cust.room_id, cust.status, cust.name, cust.nationalId, &cust.numberOfnights, &cust.day, &cust.month, &cust.year, cust.email, cust.phone);
+        if (id == cust.reservationID || id == cust.room_id)
+        {
+            changeRoomStat(id);
+            if (!strcmp(cust.status, "confirmed"))
+                stat = 1;
+            else
+                stat = 0;
+        }
+    }
+    fclose(res);
+    printw("Please re enter the new data....\n");
+    int newId = RoomReservation(stat);
+    if (!save())
+    {
+        cancel(newId, 1);
+        attron(COLOR_PAIR(9));
+        printw("Edits not saved\n");
+        refresh();
+        attroff(COLOR_PAIR(9));
+    }
+    else
+        cancel(id, 1);
 }
