@@ -6,6 +6,7 @@
 #include "./headerFiles/reservations.h"
 #include "./headerFiles/validation.h"
 #include "./headerFiles/editReservations.h"
+#include "./headerFiles/sorting.h"
 
 long generateUniqueID()
 {
@@ -187,6 +188,7 @@ int RoomReservation(int stat)
     long reservationID = generateUniqueID();
     fprintf(fptr, "%ld,%d,%s,%s,%s,%d,%02d-%02d-%02d,%s,%s\n", reservationID, cst.room_id, roomStatue, cst.name, cst.nationalId, cst.numberOfnights, cst.day, cst.month, cst.year, cst.email, cst.phone);
     fclose(fptr);
+    sort();
     return cst.room_id;
 }
 

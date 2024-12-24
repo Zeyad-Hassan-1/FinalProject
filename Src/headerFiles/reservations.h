@@ -8,6 +8,7 @@ typedef struct {
     char name[20];
     int numberOfnights;
     int day, month, year;
+    float checkindate;
     char email[20];
     char phone[20];
     char catogary[20];
